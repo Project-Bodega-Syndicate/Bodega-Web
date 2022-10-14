@@ -6,13 +6,12 @@ const Profile = () => {
   const { id } = useParams();
   const [data, setData] = useState([]);
   const [apiData, setApiData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [userList, setUserList] = useState([]);
-  const [error, setError] = useState(false);
+  // const [error, setError] = useState(false);
 
   const u_name = id;
-  const baseURL =
-    "https://bodegaproduction.azurewebsites.net/bodega-api/searchMetaUser/";
+  // const baseURL = "https://bodegaproduction.azurewebsites.net/bodega-api/searchMetaUser/";
   const baseURL2 =
     "https://bodegaproduction.azurewebsites.net/bodegaPublicURL/";
   const baseURL3 =

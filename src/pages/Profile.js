@@ -188,16 +188,18 @@ const Profile2 = () => {
             <section class="flex flex-col h-screen w-full items-center snap-start	text-white">
               <div class="relative w-full h-full justify-center">
                 <div class="flex flex-col justify-end items-center	pb-16 relative w-full h-full z-50">
-                  <img src={Chevron} class="w-10 mb-7"></img>
+                  <img src={Chevron} class="w-10 mb-7" alt="chevron"></img>
                   <img
                     class="rounded-full w-36 h-36 object-cover bg-black"
                     src={profileImg}
+                    alt="profile"
                   ></img>
                   <p class="text-3xl mt-4">{data.metausername}</p>
                 </div>
                 <img
                   class="h-full w-full absolute -z-10 top-0 left-0 object-cover object-center"
                   src={data.coverMedia}
+                  alt="cover"
                 ></img>
               </div>
             </section>
@@ -208,6 +210,7 @@ const Profile2 = () => {
                     <img
                       class="rounded-full w-24 h-24 object-cover bg-black"
                       src={profileImg}
+                      alt="profile"
                     ></img>
                   </div>
                   <div class="flex flex-col justify-center items-center">
@@ -222,6 +225,7 @@ const Profile2 = () => {
                             <img
                               class="w-40 h-56 object-cover rounded-xl cursor-pointer	"
                               src={item[0]}
+                              alt="gallery"
                               onClick={() => {
                                 window.open(item[1], "_blank");
                               }}
@@ -231,17 +235,19 @@ const Profile2 = () => {
                     </div>
                   </div>
                 </div>
-                {data.backgroundImage ==
+                {data.backgroundImage ===
                 "https://projectbodegadb.blob.core.windows.net/media/8954256a-cc48-4d73-a863-5c8ebe3c426c.jpeg" ? (
                   // <div class="h-full w-full absolute -z-10 top-0 left-0 bg-black"></div>
                   <img
                     class="h-full w-full absolute -z-10 top-0 left-0 object-cover object-center"
+                    alt="bg2"
                     src="https://i.pinimg.com/736x/c1/9d/79/c19d7964360a0144b39a0e4b67ca2cfb.jpg"
                   ></img>
                 ) : (
                   <img
                     class="h-full w-full absolute -z-10 top-0 left-0 object-cover object-center"
                     src={data.backgroundImage}
+                    alt="bg2"
                   ></img>
                 )}
               </div>
