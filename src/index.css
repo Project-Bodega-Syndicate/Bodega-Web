@@ -15,18 +15,20 @@ body {
   font-family: "TerminaW05-Bold";
 }
 
-.one {
-  background: rgb(36, 164, 138);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+body::-webkit-scrollbar {
+  display: none;
 }
-.two {
-  background: rgb(211, 79, 79);
+
+body {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
 }
-.three {
-  background: rgb(67, 91, 175);
+
+.scr-div::-webkit-scrollbar {
+  display: none;
 }
-.four {
-  background: lightsalmon;
+
+.scr-div {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
 }

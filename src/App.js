@@ -1,8 +1,7 @@
 import { Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-import Profile from "./pages/Profile";
-// import Profile3 from "./pages/Profile3";
-import ErrorPage from "./pages/ErrorPage";
+import Home from "./components/Home";
+import Profile from "./components/Profile";
+import ErrorPage from "./components/ErrorPage";
 import "./index.css";
 
 const App = () => {
@@ -10,7 +9,6 @@ const App = () => {
     <Routes>
       <Route exact path="/" element={<Home />} />
       <Route path="/:id" element={<Profile />} />
-      {/* <Route path="pr/:id" element={<Profile3 />} /> */}
       <Route path="*" element={<ErrorPage />} />
     </Routes>
   );

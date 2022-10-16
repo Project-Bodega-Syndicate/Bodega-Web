@@ -3,7 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Chevron from "../img/chevron-up.svg";
 
-const Profile2 = () => {
+const Profile = () => {
   const { id } = useParams();
   const [data, setData] = useState([]);
   const [data2, setData2] = useState([]);
@@ -26,23 +26,6 @@ const Profile2 = () => {
 
   useEffect(() => {
     var tempList = [];
-    // const tempList2 = [];
-
-    // tempList2.push(data.media1);
-    // tempList2.push(data.media2);
-    // tempList2.push(data.media3);
-    // tempList2.push(data.media4);
-    // tempList2.push(data.media5);
-    // tempList2.push(data.media6);
-    // tempList2.push(data.media7);
-    // tempList2.push(data.media8);
-    // tempList2.push(data.media9);
-    // tempList2.push(data.media10);
-    // tempList2.push(data.media11);
-    // tempList2.push(data.media12);
-    // tempList2.push(data.media13);
-    // tempList2.push(data.media14);
-    // tempList2.push(data.media15);
 
     if (data && data.media1) {
       if (!data.media1.includes(checkStr)) {
@@ -164,9 +147,9 @@ const Profile2 = () => {
 
   return (
     <div class="main-cont flex flex-col justify-center bg-transparent">
-      <div class="container sm:w-full max-w-md h-full self-center snap-y snap-mandatory	bg-transparent">
+      <div class="container sm:w-full max-w-md h-full self-center snap-y snap-mandatory bg-transparent ">
         {isLoading ? (
-          <div class="flex justify-center items-center h-screen w-full">
+          <section class="loadingCont flex justify-center items-center h-screen w-full">
             <svg
               width="200"
               height="200"
@@ -182,10 +165,10 @@ const Profile2 = () => {
                 stroke-dasharray="329.87 113.96"
               />
             </svg>
-          </div>
+          </section>
         ) : data && !noUser ? (
           <>
-            <section class="flex flex-col h-screen w-full items-center snap-start	text-white">
+            <section class="flex flex-col h-screen w-full items-center snap-always snap-start	text-white ">
               <div class="relative w-full h-full justify-center">
                 <div class="flex flex-col justify-end items-center	pb-16 relative w-full h-full z-50">
                   <img src={Chevron} class="w-10 mb-7" alt="chevron"></img>
@@ -203,9 +186,9 @@ const Profile2 = () => {
                 ></img>
               </div>
             </section>
-            <section class="flex flex-col h-screen w-full justify-center items-center snap-start text-white	">
+            <section class="flex flex-col h-screen w-full justify-center items-center snap-always snap-start text-white ">
               <div class="relative w-full h-screen">
-                <div class="relative z-50 py-11 h-screen overflow-y-scroll">
+                <div class="relative z-50 py-11 h-screen overflow-y-scroll scr-div">
                   <div class="mb-8 flex justify-center align-center">
                     <img
                       class="rounded-full w-24 h-24 object-cover bg-black"
@@ -254,10 +237,7 @@ const Profile2 = () => {
             </section>
           </>
         ) : (
-          <div
-            class="flex justify-center items-center h-screen w-full"
-            style={{ color: "white" }}
-          >
+          <div class="flex justify-center items-center h-screen w-full text-white">
             <p class="mt-10">User does not exist</p>
           </div>
         )}
@@ -266,4 +246,4 @@ const Profile2 = () => {
   );
 };
 
-export default Profile2;
+export default Profile;
