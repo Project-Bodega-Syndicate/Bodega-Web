@@ -236,7 +236,9 @@ const Profile = () => {
                               src={item[0]}
                               alt="gallery"
                               onClick={() => {
-                                window.open(item[1], "_blank");
+                                if (item[1] !== "") {
+                                  window.open(item[1], "_blank");
+                                }
                               }}
                               key={index}
                             ></img>
