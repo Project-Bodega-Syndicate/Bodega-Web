@@ -16,16 +16,76 @@ const Profile = () => {
   const topRef = useRef(null);
 
   const u_name = id;
-  // const baseURL1 = "https://bodegaproduction.azurewebsites.net/bodegaPublicURL/";
-  const baseURL2 =
-    "https://bodegaproduction.azurewebsites.net/searchBPL/metausername/";
-  const baseURL3 =
-    "https://bodegaproduction.azurewebsites.net/bodega-api/filterMetaUserTags/";
+  // const baseURL1 = process.env.REACT_APP_BASEURL1;
+  const baseURL2 = process.env.REACT_APP_BASEURL2;
+  const baseURL3 = process.env.REACT_APP_BASEURL3;
   const checkStr = "3c426c.jpeg";
 
   useEffect(() => {
+    const fetchData = (u_name) => {
+      const fetchData = async (u_name) => {
+        try {
+          const headers = {
+            "Content-Type": "application/json",
+          };
+          const response = await axios.post(baseURL2, {
+            headers: headers,
+            metausername: u_name,
+          });
+          if (response) {
+            // console.log("API Response: ", response.data);
+            if (response.data.length === 0) {
+              setIsLoading(false);
+              setNoUser(true);
+            } else {
+              setData(response.data[0]);
+            }
+          }
+        } catch (err) {
+          console.log(err.response.data);
+        }
+      };
+      setIsLoading(true);
+      fetchData(u_name);
+    };
+
     fetchData(u_name);
-  }, [u_name]);
+  }, [u_name, baseURL2]);
+
+  useEffect(() => {
+    const fetchData2 = (u_id) => {
+      const fetchData2 = async (u_id) => {
+        try {
+          const headers = {
+            "Content-Type": "application/json",
+          };
+          const response = await axios.post(baseURL3, {
+            headers: headers,
+            metauserID: u_id,
+          });
+          if (response) {
+            setIsLoading(false);
+            // console.log("API 2 Response: ", response.data);
+            setData2(response.data[0]);
+          }
+        } catch (err) {
+          console.log(err.response.data);
+        }
+      };
+      setIsLoading(true);
+      fetchData2(u_id);
+    };
+
+    if (data && data.id) {
+      fetchData2(data.ownerMetaUserID);
+    }
+  }, [data, baseURL3]);
+
+  useEffect(() => {
+    if (data2 && data2 !== "") {
+      setProfileImg(data2.metauserProfileLogo);
+    }
+  }, [data2]);
 
   useEffect(() => {
     var tempList = [];
@@ -85,68 +145,6 @@ const Profile = () => {
       setMediaList(tempList);
     }
   }, [data]);
-
-  useEffect(() => {
-    if (data && data.id) {
-      fetchData2(data.ownerMetaUserID);
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (data2 && data2 !== "") {
-      setProfileImg(data2.metauserProfileLogo);
-    }
-  }, [data2]);
-
-  const fetchData = (u_name) => {
-    const fetchData = async (u_name) => {
-      try {
-        const headers = {
-          "Content-Type": "application/json",
-        };
-        const response = await axios.post(baseURL2, {
-          headers: headers,
-          metausername: u_name,
-        });
-        if (response) {
-          // console.log("API Response: ", response.data);
-          if (response.data.length === 0) {
-            setIsLoading(false);
-            setNoUser(true);
-          } else {
-            setData(response.data[0]);
-          }
-        }
-      } catch (err) {
-        console.log(err.response.data);
-      }
-    };
-    setIsLoading(true);
-    fetchData(u_name);
-  };
-
-  const fetchData2 = (u_id) => {
-    const fetchData2 = async (u_id) => {
-      try {
-        const headers = {
-          "Content-Type": "application/json",
-        };
-        const response = await axios.post(baseURL3, {
-          headers: headers,
-          metauserID: u_id,
-        });
-        if (response) {
-          setIsLoading(false);
-          // console.log("API 2 Response: ", response.data);
-          setData2(response.data[0]);
-        }
-      } catch (err) {
-        console.log(err.response.data);
-      }
-    };
-    setIsLoading(true);
-    fetchData2(u_id);
-  };
 
   useEffect(() => {
     const onScroll = (e) => {
