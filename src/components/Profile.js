@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Chevron from "../img/chevron-up.svg";
@@ -11,6 +11,9 @@ const Profile = () => {
   const [noUser, setNoUser] = useState(false);
   const [profileImg, setProfileImg] = useState("");
   const [mediaList, setMediaList] = useState([]);
+  const [scrollValue, setScrollValue] = useState("");
+  const [scrollAmt, setScrollAmt] = useState(0);
+  const topRef = useRef(null);
 
   const u_name = id;
   // const baseURL1 = "https://bodegaproduction.azurewebsites.net/bodegaPublicURL/";
@@ -145,6 +148,25 @@ const Profile = () => {
     fetchData2(u_id);
   };
 
+  useEffect(() => {
+    const onScroll = (e) => {
+      setScrollAmt(e.target.documentElement.scrollTop);
+    };
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [scrollAmt]);
+  useEffect(() => {
+    if (topRef && scrollAmt) {
+      var elDistanceToTop =
+        window.pageYOffset + topRef.current.getBoundingClientRect().top;
+      if (scrollAmt >= elDistanceToTop) {
+        setScrollValue("scroll");
+      } else {
+        setScrollValue("hidden");
+      }
+    }
+  }, [scrollAmt, topRef]);
+
   return (
     <div className="main-cont flex flex-col justify-center bg-transparent">
       <div className="container sm:w-full max-w-md h-full self-center snap-y snap-mandatory bg-transparent ">
@@ -188,7 +210,11 @@ const Profile = () => {
             </section>
             <section className="flex flex-col h-screen w-full justify-center items-center snap-always snap-start text-white ">
               <div className="relative w-full h-screen">
-                <div className="relative z-50 py-11 h-screen overflow-y-scroll scr-div">
+                <div
+                  className="relative z-50 py-11 h-screen scr-div"
+                  ref={topRef}
+                  style={{ overflowY: `${scrollValue}` }}
+                >
                   <div className="mb-8 flex justify-center align-center">
                     <img
                       className="rounded-full w-24 h-24 object-cover bg-black"
