@@ -1,15 +1,18 @@
 import React from "react";
 // import ReactDOM from "react-dom";
-import * as ReactDOMClient from "react-dom/client";
+import * as ReactDOM from "react-dom/client";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import "./fonts/Termina-W05-Bold.ttf";
+import { AuthProvider } from "./context/AuthProvider";
 
-const root = ReactDOMClient.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

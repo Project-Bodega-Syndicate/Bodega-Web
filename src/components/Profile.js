@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Chevron from "../img/chevron-up.svg";
+// import MetaDecorator from "../utils/MetaDecorator";
+import { Helmet } from "react-helmet";
 
 const Profile = () => {
   const { id } = useParams();
@@ -14,6 +16,7 @@ const Profile = () => {
   const [scrollValue, setScrollValue] = useState("");
   const [scrollAmt, setScrollAmt] = useState(0);
   const topRef = useRef(null);
+  const imageAlt = "This image contains the profile picture of the person";
 
   const u_name = id;
   // const baseURL1 = process.env.REACT_APP_BASEURL1;
@@ -153,6 +156,7 @@ const Profile = () => {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, [scrollAmt]);
+
   useEffect(() => {
     if (topRef && scrollAmt) {
       var elDistanceToTop =
@@ -166,109 +170,129 @@ const Profile = () => {
   }, [scrollAmt, topRef]);
 
   return (
-    <div className="main-cont flex flex-col justify-center bg-transparent">
-      <div className="container sm:w-full max-w-md h-full self-center snap-y snap-mandatory bg-transparent ">
-        {isLoading ? (
-          <section className="loadingCont flex justify-center items-center h-screen w-full">
-            <svg
-              width="200"
-              height="200"
-              viewBox="0 0 200 200"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="animate-spin h-28 w-28"
-            >
-              <path
-                d="M100 170C138.66 170 170 138.66 170 100C170 61.3401 138.66 30 100 30C61.3401 30 30 61.3401 30 100C30 138.66 61.3401 170 100 170Z"
-                stroke="white"
-                strokeWidth="20"
-                strokeDasharray="329.87 113.96"
-              />
-            </svg>
+    <div className="w-full h-full self-center snap-y snap-mandatory">
+      {/* <MetaDecorator
+          title={data && !noUser && data.metausername}
+          description={data && !noUser && data.bioCaption}
+          imageUrl={data2 && !noUser && profileImg}
+          imageAlt={imageAlt}
+        /> */}
+      {/* <Helmet>
+        <title>{data && !noUser && data.metausername}</title>
+        <meta name="description" content={data && !noUser && data.bioCaption} />
+        <meta
+          property="og:title"
+          content={data && !noUser && data.metausername}
+        />
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:description"
+          content={data && !noUser && data.bioCaption}
+        />
+        <meta property="og:image" content={data2 && !noUser && profileImg} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image:alt" content={imageAlt} />
+      </Helmet> */}
+      {isLoading ? (
+        <div className="loadingCont flex justify-center items-center h-screen w-full">
+          <svg
+            width="200"
+            height="200"
+            viewBox="0 0 200 200"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="animate-spin h-28 w-28"
+          >
+            <path
+              d="M100 170C138.66 170 170 138.66 170 100C170 61.3401 138.66 30 100 30C61.3401 30 30 61.3401 30 100C30 138.66 61.3401 170 100 170Z"
+              stroke="white"
+              strokeWidth="20"
+              strokeDasharray="329.87 113.96"
+            />
+          </svg>
+        </div>
+      ) : data && !noUser ? (
+        <>
+          <section className="flex flex-col h-screen w-full items-center snap-always snap-start	text-white ">
+            <div className="relative w-full h-full justify-center">
+              <div className="flex flex-col justify-end items-center pb-16 relative w-full h-full z-50">
+                <img src={Chevron} className="w-10 mb-7" alt="chevron"></img>
+                <img
+                  className="rounded-full w-36 h-36 object-cover bg-black"
+                  src={profileImg}
+                  alt="profile"
+                ></img>
+                <p className="text-3xl mt-4">{data.metausername}</p>
+              </div>
+              <img
+                className="h-full w-full absolute -z-10 top-0 left-0 object-cover object-center"
+                src={data.coverMedia}
+                alt="cover"
+              ></img>
+            </div>
           </section>
-        ) : data && !noUser ? (
-          <>
-            <section className="flex flex-col h-screen w-full items-center snap-always snap-start	text-white ">
-              <div className="relative w-full h-full justify-center">
-                <div className="flex flex-col justify-end items-center pb-16 relative w-full h-full z-50">
-                  <img src={Chevron} className="w-10 mb-7" alt="chevron"></img>
+          <section className="flex flex-col h-screen w-full justify-center items-center snap-always snap-start text-white ">
+            <div className="relative w-full h-screen">
+              <div
+                className="relative z-50 py-11 h-screen scr-div"
+                ref={topRef}
+                style={{ overflowY: `${scrollValue}` }}
+              >
+                <div className="mb-8 flex justify-center align-center">
                   <img
-                    className="rounded-full w-36 h-36 object-cover bg-black"
+                    className="rounded-full w-24 h-24 object-cover bg-black"
                     src={profileImg}
                     alt="profile"
                   ></img>
-                  <p className="text-3xl mt-4">{data.metausername}</p>
                 </div>
+                <div className="flex flex-col justify-center items-center">
+                  <p className="text-2xl">{data.metausername}</p>
+                  <p className="text-lg font-thin">{data.bioCaption}</p>
+                </div>
+                <div className="flex justify-center items-center">
+                  <div className="grid grid-cols-2 gap-3 mt-4 px-6">
+                    {mediaList &&
+                      mediaList.map((item, index) => {
+                        return (
+                          <img
+                            className="w-40 h-56 object-cover rounded-xl cursor-pointer	"
+                            src={item[0]}
+                            alt="gallery"
+                            onClick={() => {
+                              if (item[1] !== "") {
+                                window.open(item[1], "_blank");
+                              }
+                            }}
+                            key={index}
+                          ></img>
+                        );
+                      })}
+                  </div>
+                </div>
+              </div>
+              {data.backgroundImage ===
+              "https://projectbodegadb.blob.core.windows.net/media/8954256a-cc48-4d73-a863-5c8ebe3c426c.jpeg" ? (
+                // <div className="h-full w-full absolute -z-10 top-0 left-0 bg-black"></div>
                 <img
                   className="h-full w-full absolute -z-10 top-0 left-0 object-cover object-center"
-                  src={data.coverMedia}
-                  alt="cover"
+                  alt="bg2"
+                  src="https://i.pinimg.com/736x/c1/9d/79/c19d7964360a0144b39a0e4b67ca2cfb.jpg"
                 ></img>
-              </div>
-            </section>
-            <section className="flex flex-col h-screen w-full justify-center items-center snap-always snap-start text-white ">
-              <div className="relative w-full h-screen">
-                <div
-                  className="relative z-50 py-11 h-screen scr-div"
-                  ref={topRef}
-                  style={{ overflowY: `${scrollValue}` }}
-                >
-                  <div className="mb-8 flex justify-center align-center">
-                    <img
-                      className="rounded-full w-24 h-24 object-cover bg-black"
-                      src={profileImg}
-                      alt="profile"
-                    ></img>
-                  </div>
-                  <div className="flex flex-col justify-center items-center">
-                    <p className="text-2xl">{data.metausername}</p>
-                    <p className="text-lg font-thin">{data.bioCaption}</p>
-                  </div>
-                  <div className="flex justify-center items-center">
-                    <div className="grid grid-cols-2 gap-3 mt-4 px-6">
-                      {mediaList &&
-                        mediaList.map((item, index) => {
-                          return (
-                            <img
-                              className="w-40 h-56 object-cover rounded-xl cursor-pointer	"
-                              src={item[0]}
-                              alt="gallery"
-                              onClick={() => {
-                                if (item[1] !== "") {
-                                  window.open(item[1], "_blank");
-                                }
-                              }}
-                              key={index}
-                            ></img>
-                          );
-                        })}
-                    </div>
-                  </div>
-                </div>
-                {data.backgroundImage ===
-                "https://projectbodegadb.blob.core.windows.net/media/8954256a-cc48-4d73-a863-5c8ebe3c426c.jpeg" ? (
-                  // <div className="h-full w-full absolute -z-10 top-0 left-0 bg-black"></div>
-                  <img
-                    className="h-full w-full absolute -z-10 top-0 left-0 object-cover object-center"
-                    alt="bg2"
-                    src="https://i.pinimg.com/736x/c1/9d/79/c19d7964360a0144b39a0e4b67ca2cfb.jpg"
-                  ></img>
-                ) : (
-                  <img
-                    className="h-full w-full absolute -z-10 top-0 left-0 object-cover object-center"
-                    src={data.backgroundImage}
-                    alt="bg2"
-                  ></img>
-                )}
-              </div>
-            </section>
-          </>
-        ) : (
-          <div className="flex justify-center items-center h-screen w-full text-white">
-            <p className="mt-10">User does not exist</p>
-          </div>
-        )}
-      </div>
+              ) : (
+                <img
+                  className="h-full w-full absolute -z-10 top-0 left-0 object-cover object-center"
+                  src={data.backgroundImage}
+                  alt="bg2"
+                ></img>
+              )}
+            </div>
+          </section>
+        </>
+      ) : (
+        <div className="flex justify-center items-center h-screen w-full text-white">
+          <p className="mt-10">User does not exist</p>
+        </div>
+      )}
     </div>
   );
 };
