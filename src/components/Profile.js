@@ -3,7 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Chevron from "../img/chevron-up.svg";
 // import MetaDecorator from "../utils/MetaDecorator";
-import { Helmet } from "react-helmet";
+// import { Helmet } from "react-helmet";
 
 const Profile = () => {
   const { id } = useParams();
@@ -16,7 +16,7 @@ const Profile = () => {
   const [scrollValue, setScrollValue] = useState("");
   const [scrollAmt, setScrollAmt] = useState(0);
   const topRef = useRef(null);
-  const imageAlt = "This image contains the profile picture of the person";
+  // const imageAlt = "This image contains the profile picture of the person";
 
   const u_name = id;
   // const baseURL1 = process.env.REACT_APP_BASEURL1;

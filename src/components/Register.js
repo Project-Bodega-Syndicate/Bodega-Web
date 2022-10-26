@@ -87,8 +87,12 @@ const Register = () => {
       });
       // console.log(response?.data);
       // console.log(JSON.stringify(response));
-      setIsLoading(false);
-      setSuccess(true);
+      if (response.data) {
+        setIsLoading(false);
+        if (response.data.id) {
+          setSuccess(true);
+        }
+      }
       //clear state and controlled inputs
       //need value attrib on inputs for this
       setUser("");

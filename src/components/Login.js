@@ -50,16 +50,28 @@ const Login = () => {
         passcode: pwd,
         public_hashkey: userKey,
       });
-      // console.log(response?.data);
-      // console.log(JSON.stringify(response));
+      console.log(response?.data);
+      console.log(JSON.stringify(response.data));
       setIsLoading(false);
       // const accessToken = response?.data?.accessToken;
       // const roles = response?.data?.roles;
-      setAuth({
-        user,
-        pwd,
-        // roles, accessToken
-      });
+      if (
+        response.data &&
+        response.data.meta_username &&
+        response.data.passcode &&
+        response.data.public_hashkey
+      ) {
+        setUser(response.data.meta_username);
+        setPwd(response.data.passcode);
+        setUserKey(response.data.public_hashkey);
+
+        setAuth({
+          user,
+          pwd,
+          userKey,
+          // roles, accessToken
+        });
+      }
       setUser("");
       setPwd("");
       setSuccess(true);
