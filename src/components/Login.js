@@ -4,16 +4,16 @@ import useAuth from "../hooks/useAuth";
 import BDGLOGO from "../img/proj-bdg.png";
 import {
   Link,
-  // useNavigate,
+  useNavigate,
   // useLocation,
-  // Navigate
+  // Navigate,
 } from "react-router-dom";
 // import axios from "../api/axios";
 import axios from "axios";
 const LOGIN_URL = process.env.REACT_APP_LOGIN_URL;
 
 const Login = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   // const location = useLocation();
   // const from = location.state?.from?.pathname || "/";
   const { setAuth } = useAuth();
@@ -50,8 +50,8 @@ const Login = () => {
         passcode: pwd,
         public_hashkey: userKey,
       });
-      console.log(response?.data);
-      console.log(JSON.stringify(response.data));
+      // console.log(response?.data);
+      // console.log(JSON.stringify(response.data));
       setIsLoading(false);
       // const accessToken = response?.data?.accessToken;
       // const roles = response?.data?.roles;
@@ -61,9 +61,9 @@ const Login = () => {
         response.data.passcode &&
         response.data.public_hashkey
       ) {
-        setUser(response.data.meta_username);
-        setPwd(response.data.passcode);
-        setUserKey(response.data.public_hashkey);
+        // setUser(response.data.meta_username);
+        // setPwd(response.data.passcode);
+        // setUserKey(response.data.public_hashkey);
 
         setAuth({
           user,
@@ -71,11 +71,9 @@ const Login = () => {
           userKey,
           // roles, accessToken
         });
+        setSuccess(true);
+        navigate(`/${user}`, { replace: true });
       }
-      setUser("");
-      setPwd("");
-      setSuccess(true);
-      // navigate(from, { replace: true });
     } catch (err) {
       setIsLoading(false);
       console.log(err);
@@ -95,10 +93,11 @@ const Login = () => {
   };
 
   // useEffect(() => {
-  //   if (user && pwd && success) {
-  //     <Navigate to={"/" + user} state={{ from: location }} replace />;
+  //   if (success) {
+  //     // navigate(`/${user}`);
+  //     navigate("/dashboard");
   //   }
-  // }, [user, pwd, success]);
+  // }, [success, navigate]);
 
   return (
     <div className="flex flex-col justify-start items-center h-screen w-full text-white px-4 pt-10">
@@ -121,20 +120,22 @@ const Login = () => {
             />
           </svg>
         </div>
-      ) : success && !isLoading ? (
-        <div className="flex flex-col justify-center items-center h-full">
-          <h1>Login Successful</h1>
-          <br />
-          <p>
-            <Link
-              className="decoration-blue-700 underline text-sm text-blue-700 mt-6"
-              to={"/dashboard"}
-            >
-              Go to Dashboard
-            </Link>
-          </p>
-        </div>
       ) : (
+        // ) : success && user && pwd && userKey && !isLoading ? (
+        //   // <Navigate to={`/${user}`} state={{ from: location }} replace />
+
+        //   <div className="flex flex-col justify-center items-center h-full">
+        //     <h1>Login Successful</h1>
+        //     <br />
+        //     <p>
+        //       <Link
+        //         className="decoration-blue-700 underline text-sm text-blue-700 mt-6"
+        //         to={"/dashboard"}
+        //       >
+        //         Go to Dashboard
+        //       </Link>
+        //     </p>
+        //   </div>
         <>
           <p className="text-3xl mt-10">Login</p>
           <p

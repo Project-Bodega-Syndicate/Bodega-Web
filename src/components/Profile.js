@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Chevron from "../img/chevron-up.svg";
 // import MetaDecorator from "../utils/MetaDecorator";
 // import { Helmet } from "react-helmet";
@@ -223,7 +223,9 @@ const Profile = () => {
                   src={profileImg}
                   alt="profile"
                 ></img>
-                <p className="text-3xl mt-4">{data.metausername}</p>
+                <Link to={"/dashboard"}>
+                  <p className="text-3xl mt-4">{data.metausername}</p>
+                </Link>
               </div>
               <img
                 className="h-full w-full absolute -z-10 top-0 left-0 object-cover object-center"
