@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import Chevron from "../img/chevron-up.svg";
 // import MetaDecorator from "../utils/MetaDecorator";
 // import { Helmet } from "react-helmet";
+import { CHECK_STR, CHECK_STR2 } from "../utils/constants";
 
 const Profile = () => {
   const { id } = useParams();
@@ -22,7 +23,7 @@ const Profile = () => {
   // const baseURL1 = process.env.REACT_APP_BASEURL1;
   const baseURL2 = process.env.REACT_APP_BASEURL2;
   const baseURL3 = process.env.REACT_APP_BASEURL3;
-  const checkStr = "3c426c.jpeg";
+  const checkStr = CHECK_STR2;
 
   useEffect(() => {
     const fetchData = (u_name) => {
@@ -147,7 +148,7 @@ const Profile = () => {
       // console.log("Templist", tempList);
       setMediaList(tempList);
     }
-  }, [data]);
+  }, [data, checkStr]);
 
   useEffect(() => {
     const onScroll = (e) => {
@@ -270,15 +271,14 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
-              {data.backgroundImage ===
-              "https://projectbodegadb.blob.core.windows.net/media/8954256a-cc48-4d73-a863-5c8ebe3c426c.jpeg" ? (
-                // <div className="h-full w-full absolute -z-10 top-0 left-0 bg-black"></div>
-                <img
-                  className="h-full w-full absolute -z-10 top-0 left-0 object-cover object-center"
-                  alt="bg2"
-                  src="https://i.pinimg.com/736x/c1/9d/79/c19d7964360a0144b39a0e4b67ca2cfb.jpg"
-                ></img>
+              {data.backgroundImage === CHECK_STR ? (
+                <div className="h-full w-full absolute -z-10 top-0 left-0 bg-black"></div>
               ) : (
+                // <img
+                //   className="h-full w-full absolute -z-10 top-0 left-0 object-cover object-center"
+                //   alt="bg2"
+                //   src="https://i.pinimg.com/736x/c1/9d/79/c19d7964360a0144b39a0e4b67ca2cfb.jpg"
+                // ></img>
                 <img
                   className="h-full w-full absolute -z-10 top-0 left-0 object-cover object-center"
                   src={data.backgroundImage}
