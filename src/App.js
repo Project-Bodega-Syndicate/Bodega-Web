@@ -7,6 +7,8 @@ import ErrorPage from "./components/ErrorPage";
 import Login from "./components/Login";
 import RequireAuth from "./components/RequireAuth";
 import Dashboard from "./components/Dashboard";
+import Products from "./components/Products";
+import ProductDetails from "./components/ProductDetails";
 
 const App = () => {
   return (
@@ -14,10 +16,12 @@ const App = () => {
       <div className="container sm:w-full max-w-md h-screen bg-transparent justify-center">
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<Home />} />
+          <Route exact path="/" element={<Home />} />
           <Route path="/:id" element={<Profile />} />
-          {/* <Route exact path="/register" element={<Register />} /> */}
+          <Route exact path="/products" element={<Products />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
           <Route exact path="/login" element={<Login />} />
+          {/* <Route exact path="/register" element={<Register />} /> */}
           <Route path="*" element={<ErrorPage />} />
 
           {/* Protected Routes */}
