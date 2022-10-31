@@ -107,7 +107,7 @@ const Profile = () => {
             metauserID: u_id,
           });
           if (response) {
-            console.log("User Prd Response: ", response.data);
+            // console.log("User Prd Response: ", response.data);
             setUserPrdList(response.data);
           }
         } catch (err) {
