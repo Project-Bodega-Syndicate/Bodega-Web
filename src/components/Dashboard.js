@@ -1,9 +1,8 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import AuthContext from "../context/AuthProvider";
+import useAuth from "../hooks/useAuth";
 
 const Dashboard = () => {
-  const { auth, setAuth } = useContext(AuthContext);
+  const { auth, setAuth } = useAuth();
   const navigate = useNavigate();
 
   const logout = async () => {
