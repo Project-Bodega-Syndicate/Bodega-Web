@@ -3,6 +3,7 @@ import axios from "axios";
 import {
   // Link,
   useParams,
+  NavLink,
 } from "react-router-dom";
 import Chevron from "../img/chevron-up.svg";
 import TVOutline from "../img/TVOutline.svg";
@@ -12,6 +13,7 @@ import TVSolid from "../img/TVSolid.svg";
 import { CHECK_STR, CHECK_STR2 } from "../utils/constants";
 import { ShoppingBagIcon } from "@heroicons/react/24/solid";
 import { ShoppingBagIcon as ShoppingBagIconOutline } from "@heroicons/react/24/outline";
+import useAppContext from "../hooks/useAppContext";
 
 const Profile = () => {
   const { id } = useParams();
@@ -27,6 +29,8 @@ const Profile = () => {
   const [scrollAmt, setScrollAmt] = useState(0);
   const topRef = useRef(null);
   // const imageAlt = "This image contains the profile picture of the person";
+
+  const { setSinglePrd } = useAppContext();
 
   const u_name = id;
   // const baseURL1 = process.env.REACT_APP_BASEURL1;
@@ -207,6 +211,10 @@ const Profile = () => {
       }
     }
   }, [scrollAmt, topRef]);
+
+  const handlePrdClick = (itemData) => {
+    setSinglePrd(itemData);
+  };
 
   return (
     <div className="w-full h-full self-center snap-y snap-mandatory">
@@ -407,12 +415,18 @@ const Profile = () => {
                           )
                           .map((item, index) => {
                             return (
-                              <img
-                                className="w-40 h-56 object-cover rounded-xl cursor-pointer	"
-                                src={item.product_image1}
-                                alt=""
+                              <NavLink
+                                to={`/product/${item.id}`}
                                 key={index}
-                              ></img>
+                                onClick={() => handlePrdClick(item)}
+                              >
+                                <img
+                                  className="w-40 h-56 object-cover rounded-xl cursor-pointer	"
+                                  src={item.product_image1}
+                                  alt=""
+                                  key={index}
+                                ></img>
+                              </NavLink>
                             );
                           })
                       : mediaList &&
