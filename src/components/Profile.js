@@ -3,40 +3,40 @@ import axios from "axios";
 import {
   // Link,
   useParams,
-  NavLink,
+  // NavLink,
 } from "react-router-dom";
 import Chevron from "../img/chevron-up.svg";
-import TVOutline from "../img/TVOutline.svg";
-import TVSolid from "../img/TVSolid.svg";
+// import TVOutline from "../img/TVOutline.svg";
+// import TVSolid from "../img/TVSolid.svg";
 // import MetaDecorator from "../utils/MetaDecorator";
 // import { Helmet } from "react-helmet";
 import { CHECK_STR, CHECK_STR2 } from "../utils/constants";
-import { ShoppingBagIcon } from "@heroicons/react/24/solid";
-import { ShoppingBagIcon as ShoppingBagIconOutline } from "@heroicons/react/24/outline";
-import useAppContext from "../hooks/useAppContext";
+// import { ShoppingBagIcon } from "@heroicons/react/24/solid";
+// import { ShoppingBagIcon as ShoppingBagIconOutline } from "@heroicons/react/24/outline";
+// import useAppContext from "../hooks/useAppContext";
 
 const Profile = () => {
   const { id } = useParams();
   const [data, setData] = useState([]);
   const [data2, setData2] = useState([]);
-  const [userPrdList, setUserPrdList] = useState([]);
+  // const [userPrdList, setUserPrdList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [noUser, setNoUser] = useState(false);
   const [profileImg, setProfileImg] = useState("");
   const [mediaList, setMediaList] = useState([]);
-  const [activeGrid, setActiveGrid] = useState("none");
+  // const [activeGrid, setActiveGrid] = useState("none");
   const [scrollValue, setScrollValue] = useState("");
   const [scrollAmt, setScrollAmt] = useState(0);
   const topRef = useRef(null);
   // const imageAlt = "This image contains the profile picture of the person";
 
-  const { setSinglePrd } = useAppContext();
+  // const { setSinglePrd } = useAppContext();
 
   const u_name = id;
   // const baseURL1 = process.env.REACT_APP_BASEURL1;
   const baseURL2 = process.env.REACT_APP_BASEURL2;
   const baseURL3 = process.env.REACT_APP_BASEURL3;
-  const userPrdURL = process.env.REACT_APP_USER_PRODUCT_URL;
+  // const userPrdURL = process.env.REACT_APP_USER_PRODUCT_URL;
   const checkStr = CHECK_STR2;
 
   useEffect(() => {
@@ -99,33 +99,33 @@ const Profile = () => {
     }
   }, [data, baseURL3]);
 
-  useEffect(() => {
-    const fetchUserPrd = (u_id) => {
-      const fetchUserPrd = async (u_id) => {
-        try {
-          const headers = {
-            "Content-Type": "application/json",
-          };
-          const response = await axios.post(userPrdURL, {
-            headers: headers,
-            metauserID: u_id,
-          });
-          if (response) {
-            // console.log("User Prd Response: ", response.data);
-            setUserPrdList(response.data);
-          }
-        } catch (err) {
-          console.log(err.response.data);
-        }
-      };
-      // setIsLoading(true);
-      fetchUserPrd(u_id);
-    };
+  // useEffect(() => {
+  //   const fetchUserPrd = (u_id) => {
+  //     const fetchUserPrd = async (u_id) => {
+  //       try {
+  //         const headers = {
+  //           "Content-Type": "application/json",
+  //         };
+  //         const response = await axios.post(userPrdURL, {
+  //           headers: headers,
+  //           metauserID: u_id,
+  //         });
+  //         if (response) {
+  //           // console.log("User Prd Response: ", response.data);
+  //           setUserPrdList(response.data);
+  //         }
+  //       } catch (err) {
+  //         console.log(err.response.data);
+  //       }
+  //     };
+  //     // setIsLoading(true);
+  //     fetchUserPrd(u_id);
+  //   };
 
-    if (data && data.id) {
-      fetchUserPrd(data.ownerMetaUserID);
-    }
-  }, [data, userPrdURL]);
+  //   if (data && data.id) {
+  //     fetchUserPrd(data.ownerMetaUserID);
+  //   }
+  // }, [data, userPrdURL]);
 
   useEffect(() => {
     if (data2 && data2 !== "") {
@@ -201,7 +201,7 @@ const Profile = () => {
   }, [scrollAmt]);
 
   useEffect(() => {
-    if (topRef && scrollAmt) {
+    if (topRef && topRef.current && scrollAmt) {
       var elDistanceToTop =
         window.pageYOffset + topRef.current.getBoundingClientRect().top;
       if (scrollAmt >= elDistanceToTop) {
@@ -212,9 +212,9 @@ const Profile = () => {
     }
   }, [scrollAmt, topRef]);
 
-  const handlePrdClick = (itemData) => {
-    setSinglePrd(itemData);
-  };
+  // const handlePrdClick = (itemData) => {
+  //   setSinglePrd(itemData);
+  // };
 
   return (
     <div className="w-full h-full self-center snap-y snap-mandatory">
@@ -351,9 +351,9 @@ const Profile = () => {
                   <div className="flex flex-col justify-center items-center">
                     <p className="text-2xl">{data.metausername}</p>
                     <p className="text-lg font-thin">{data.bioCaption}</p>
-                    <p className="text-thin">__________</p>
+                    {/* <p className="text-thin">__________</p> */}
                   </div>
-                  <div className="flex flex-row justify-start mt-4">
+                  {/* <div className="flex flex-row justify-start mt-4">
                     {activeGrid === "ShopOn" ? (
                       <ShoppingBagIcon
                         className="text-white mr-1 h-6 w-6 inline-block cursor-pointer"
@@ -380,14 +380,31 @@ const Profile = () => {
                         onClick={() => setActiveGrid("TVOn")}
                       ></img>
                     )}
-                  </div>
+                  </div> */}
                   {/* <Link to={"/"}>
                     <p className="text-3xl mt-4">Prds</p>
                   </Link> */}
                 </div>
                 <div className="flex justify-center items-center">
                   <div className="grid grid-cols-2 gap-3 mt-4 px-6">
-                    {activeGrid === "none" && mediaList
+                    {mediaList &&
+                      mediaList.map((item, index) => {
+                        return (
+                          <img
+                            className="w-40 h-56 object-cover rounded-xl cursor-pointer	"
+                            src={item[0]}
+                            alt=""
+                            onClick={() => {
+                              if (item[1] !== "") {
+                                window.open(item[1], "_blank");
+                              }
+                            }}
+                            key={index}
+                          ></img>
+                        );
+                      })}
+
+                    {/* {activeGrid === "none" && mediaList
                       ? mediaList.map((item, index) => {
                           return (
                             <img
@@ -444,7 +461,7 @@ const Profile = () => {
                               key={index}
                             ></img>
                           );
-                        })}
+                        })} */}
                   </div>
                 </div>
               </div>
