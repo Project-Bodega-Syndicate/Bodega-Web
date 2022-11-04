@@ -22,11 +22,11 @@ const ProductDetails = () => {
   //   console.log("Single Product Data: ", singlePrd);
   // }, [singlePrd]);
 
-  useEffect(() => {
-    if (singlePrd && singlePrd.id) {
-      console.log(singlePrd);
-    }
-  }, [singlePrd]);
+  // useEffect(() => {
+  //   if (singlePrd && singlePrd.id) {
+  //     console.log(singlePrd);
+  //   }
+  // }, [singlePrd]);
 
   useEffect(() => {
     if (singlePrd && singlePrd.product_image1) {
@@ -79,7 +79,7 @@ const ProductDetails = () => {
               ownerMetaUserID: singlePrd.metauserID,
             });
             if (response) {
-              console.log("Product's Metauser: ", response.data);
+              // console.log("Product's Metauser: ", response.data);
               if (response.data.length === 0) {
                 setPrdOwner([]);
               } else {

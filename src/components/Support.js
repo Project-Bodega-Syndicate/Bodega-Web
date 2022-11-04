@@ -73,11 +73,11 @@ const Support = () => {
     };
   }, [userFile]);
 
-  useEffect(() => {
-    if (fileDataURL) {
-      console.log(fileDataURL);
-    }
-  }, [fileDataURL]);
+  // useEffect(() => {
+  //   if (fileDataURL) {
+  //     console.log(fileDataURL);
+  //   }
+  // }, [fileDataURL]);
 
   return (
     <div className="flex flex-col justify-start items-center h-screen w-full text-white px-4 pt-10">
