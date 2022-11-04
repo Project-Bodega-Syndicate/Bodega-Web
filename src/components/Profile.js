@@ -8,20 +8,31 @@ import {
 import Chevron from "../img/chevron-up.svg";
 // import TVOutline from "../img/TVOutline.svg";
 // import TVSolid from "../img/TVSolid.svg";
+// import CompassFilled from "../img/CompassFill.svg";
+// import CompassOutline from "../img/CompassOutline.svg";
 // import MetaDecorator from "../utils/MetaDecorator";
 // import { Helmet } from "react-helmet";
 import { CHECK_STR, CHECK_STR2 } from "../utils/constants";
 // import { ShoppingBagIcon } from "@heroicons/react/24/solid";
 // import { ShoppingBagIcon as ShoppingBagIconOutline } from "@heroicons/react/24/outline";
-// import useAppContext from "../hooks/useAppContext";
+import useAppContext from "../hooks/useAppContext";
 
 const Profile = () => {
+  const {
+    noUser,
+    setNoUser,
+    userPrfData,
+    setUserPrfData,
+    userPrfData2,
+    setUserPrfData2,
+    // setSinglePrd,
+  } = useAppContext();
   const { id } = useParams();
-  const [data, setData] = useState([]);
-  const [data2, setData2] = useState([]);
+  // const [data, setData] = useState([]);
+  // const [data2, setData2] = useState([]);
   // const [userPrdList, setUserPrdList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [noUser, setNoUser] = useState(false);
+  // const [noUser, setNoUser] = useState(false);
   const [profileImg, setProfileImg] = useState("");
   const [mediaList, setMediaList] = useState([]);
   // const [activeGrid, setActiveGrid] = useState("none");
@@ -29,8 +40,6 @@ const Profile = () => {
   const [scrollAmt, setScrollAmt] = useState(0);
   const topRef = useRef(null);
   // const imageAlt = "This image contains the profile picture of the person";
-
-  // const { setSinglePrd } = useAppContext();
 
   const u_name = id;
   // const baseURL1 = process.env.REACT_APP_BASEURL1;
@@ -40,35 +49,42 @@ const Profile = () => {
   const checkStr = CHECK_STR2;
 
   useEffect(() => {
-    const fetchData = (u_name) => {
-      const fetchData = async (u_name) => {
-        try {
-          const headers = {
-            "Content-Type": "application/json",
-          };
-          const response = await axios.post(baseURL2, {
-            headers: headers,
-            metausername: u_name,
-          });
-          if (response) {
-            // console.log("API Response: ", response.data);
-            if (response.data.length === 0) {
-              setIsLoading(false);
-              setNoUser(true);
-            } else {
-              setData(response.data[0]);
+    if (userPrfData && userPrfData.id) {
+      return;
+    } else if (!userPrfData || !userPrfData.id) {
+      if (id) {
+        const fetchData = (u_name) => {
+          const fetchData = async (u_name) => {
+            try {
+              const headers = {
+                "Content-Type": "application/json",
+              };
+              const response = await axios.post(baseURL2, {
+                headers: headers,
+                metausername: u_name,
+              });
+              if (response) {
+                // console.log("API Response: ", response.userPrfData);
+                if (response.data.length === 0) {
+                  setIsLoading(false);
+                  setNoUser(true);
+                } else {
+                  setUserPrfData(response.data[0]);
+                }
+              }
+            } catch (err) {
+              console.log(err.response.data);
             }
-          }
-        } catch (err) {
-          console.log(err.response.data);
-        }
-      };
-      setIsLoading(true);
-      fetchData(u_name);
-    };
-
-    fetchData(u_name);
-  }, [u_name, baseURL2]);
+          };
+          setIsLoading(true);
+          fetchData(u_name);
+        };
+        fetchData(u_name);
+      } else {
+        setIsLoading(true);
+      }
+    }
+  }, [u_name, baseURL2, id, setNoUser, setUserPrfData, userPrfData]);
 
   useEffect(() => {
     const fetchData2 = (u_id) => {
@@ -84,7 +100,7 @@ const Profile = () => {
           if (response) {
             setIsLoading(false);
             // console.log("API 2 Response: ", response.data);
-            setData2(response.data[0]);
+            setUserPrfData2(response.data[0]);
           }
         } catch (err) {
           console.log(err.response.data);
@@ -94,10 +110,16 @@ const Profile = () => {
       fetchData2(u_id);
     };
 
-    if (data && data.id) {
-      fetchData2(data.ownerMetaUserID);
+    if (userPrfData2 && userPrfData2.id) {
+      return;
+    } else if (!userPrfData2 || !userPrfData2.id) {
+      if (userPrfData && userPrfData.id) {
+        fetchData2(userPrfData.ownerMetaUserID);
+      } else {
+        setIsLoading(true);
+      }
     }
-  }, [data, baseURL3]);
+  }, [userPrfData, baseURL3, setUserPrfData2, userPrfData2]);
 
   // useEffect(() => {
   //   const fetchUserPrd = (u_id) => {
@@ -122,65 +144,65 @@ const Profile = () => {
   //     fetchUserPrd(u_id);
   //   };
 
-  //   if (data && data.id) {
-  //     fetchUserPrd(data.ownerMetaUserID);
+  //   if (userPrfData && userPrfData.id) {
+  //     fetchUserPrd(userPrfData.ownerMetaUserID);
   //   }
-  // }, [data, userPrdURL]);
+  // }, [userPrfData, userPrdURL]);
 
   useEffect(() => {
-    if (data2 && data2 !== "") {
-      setProfileImg(data2.metauserProfileLogo);
+    if (userPrfData2 && userPrfData2 !== "") {
+      setProfileImg(userPrfData2.metauserProfileLogo);
     }
-  }, [data2]);
+  }, [userPrfData2]);
 
   useEffect(() => {
     var tempList = [];
 
-    if (data && data.media1) {
-      if (!data.media1.includes(checkStr)) {
-        tempList.push([data.media1, data.caption1]);
+    if (userPrfData && userPrfData.media1) {
+      if (!userPrfData.media1.includes(checkStr)) {
+        tempList.push([userPrfData.media1, userPrfData.caption1]);
       }
-      if (!data.media2.includes(checkStr)) {
-        tempList.push([data.media2, data.caption2]);
+      if (!userPrfData.media2.includes(checkStr)) {
+        tempList.push([userPrfData.media2, userPrfData.caption2]);
       }
-      if (!data.media3.includes(checkStr)) {
-        tempList.push([data.media3, data.caption3]);
+      if (!userPrfData.media3.includes(checkStr)) {
+        tempList.push([userPrfData.media3, userPrfData.caption3]);
       }
-      if (!data.media4.includes(checkStr)) {
-        tempList.push([data.media4, data.caption4]);
+      if (!userPrfData.media4.includes(checkStr)) {
+        tempList.push([userPrfData.media4, userPrfData.caption4]);
       }
-      if (!data.media5.includes(checkStr)) {
-        tempList.push([data.media5, data.caption5]);
+      if (!userPrfData.media5.includes(checkStr)) {
+        tempList.push([userPrfData.media5, userPrfData.caption5]);
       }
-      if (!data.media6.includes(checkStr)) {
-        tempList.push([data.media6, data.caption6]);
+      if (!userPrfData.media6.includes(checkStr)) {
+        tempList.push([userPrfData.media6, userPrfData.caption6]);
       }
-      if (!data.media7.includes(checkStr)) {
-        tempList.push([data.media7, data.caption7]);
+      if (!userPrfData.media7.includes(checkStr)) {
+        tempList.push([userPrfData.media7, userPrfData.caption7]);
       }
-      if (!data.media8.includes(checkStr)) {
-        tempList.push([data.media8, data.caption8]);
+      if (!userPrfData.media8.includes(checkStr)) {
+        tempList.push([userPrfData.media8, userPrfData.caption8]);
       }
-      if (!data.media9.includes(checkStr)) {
-        tempList.push([data.media9, data.caption9]);
+      if (!userPrfData.media9.includes(checkStr)) {
+        tempList.push([userPrfData.media9, userPrfData.caption9]);
       }
-      if (!data.media10.includes(checkStr)) {
-        tempList.push([data.media10, data.caption10]);
+      if (!userPrfData.media10.includes(checkStr)) {
+        tempList.push([userPrfData.media10, userPrfData.caption10]);
       }
-      if (!data.media11.includes(checkStr)) {
-        tempList.push([data.media11, data.caption11]);
+      if (!userPrfData.media11.includes(checkStr)) {
+        tempList.push([userPrfData.media11, userPrfData.caption11]);
       }
-      if (!data.media12.includes(checkStr)) {
-        tempList.push([data.media12, data.caption12]);
+      if (!userPrfData.media12.includes(checkStr)) {
+        tempList.push([userPrfData.media12, userPrfData.caption12]);
       }
-      if (!data.media13.includes(checkStr)) {
-        tempList.push([data.media13, data.caption13]);
+      if (!userPrfData.media13.includes(checkStr)) {
+        tempList.push([userPrfData.media13, userPrfData.caption13]);
       }
-      if (!data.media14.includes(checkStr)) {
-        tempList.push([data.media14, data.caption14]);
+      if (!userPrfData.media14.includes(checkStr)) {
+        tempList.push([userPrfData.media14, userPrfData.caption14]);
       }
-      if (!data.media15.includes(checkStr)) {
-        tempList.push([data.media15, data.caption15]);
+      if (!userPrfData.media15.includes(checkStr)) {
+        tempList.push([userPrfData.media15, userPrfData.caption15]);
       }
       // tempList.forEach((x) => {
       //   if (!x.includes(checkStr)) {
@@ -190,7 +212,7 @@ const Profile = () => {
       // console.log("Templist", tempList);
       setMediaList(tempList);
     }
-  }, [data, checkStr]);
+  }, [userPrfData, checkStr]);
 
   useEffect(() => {
     const onScroll = (e) => {
@@ -311,7 +333,7 @@ const Profile = () => {
             />
           </svg>
         </div>
-      ) : data && !noUser ? (
+      ) : userPrfData && !noUser ? (
         <>
           <section className="flex flex-col h-screen w-full items-center snap-always snap-start	text-white ">
             <div className="relative w-full h-full justify-center">
@@ -323,12 +345,12 @@ const Profile = () => {
                   alt=""
                 ></img>
                 {/* <Link to={"/dashboard"}> */}
-                <p className="text-3xl mt-4">{data.metausername}</p>
+                <p className="text-3xl mt-4">{userPrfData.metausername}</p>
                 {/* </Link> */}
               </div>
               <img
                 className="h-full w-full absolute -z-10 top-0 left-0 object-cover object-center"
-                src={data.coverMedia}
+                src={userPrfData.coverMedia}
                 alt=""
               ></img>
             </div>
@@ -349,41 +371,55 @@ const Profile = () => {
                 </div>
                 <div className="flex flex-col justify-center items-center">
                   <div className="flex flex-col justify-center items-center">
-                    <p className="text-2xl">{data.metausername}</p>
-                    <p className="text-lg font-thin">{data.bioCaption}</p>
+                    <p className="text-2xl">{userPrfData.metausername}</p>
+                    <p className="text-lg font-thin">
+                      {userPrfData.bioCaption}
+                    </p>
                     {/* <p className="text-thin">__________</p> */}
                   </div>
                   {/* <div className="flex flex-row justify-start mt-4">
+                    {activeGrid === "none" ? (
+                      <img
+                        alt=""
+                        src={CompassFilled}
+                        className="mr-3 h-6 w-6 cursor-pointer"
+                        onClick={() => setActiveGrid("ShopOn")}
+                      ></img>
+                    ) : (
+                      <img
+                        alt=""
+                        src={CompassOutline}
+                        className="mr-3 h-6 w-6 cursor-pointer"
+                        onClick={() => setActiveGrid("none")}
+                      ></img>
+                    )}
                     {activeGrid === "ShopOn" ? (
                       <ShoppingBagIcon
-                        className="text-white mr-1 h-6 w-6 inline-block cursor-pointer"
+                        className="text-white mr-3 h-6 w-6 inline-block cursor-pointer"
                         onClick={() => setActiveGrid("none")}
                       />
                     ) : (
                       <ShoppingBagIconOutline
-                        className="text-white mr-1 h-6 w-6 inline-block cursor-pointer"
+                        className="text-white mr-3 h-6 w-6 inline-block cursor-pointer"
                         onClick={() => setActiveGrid("ShopOn")}
                       />
-                    )}
-                    {activeGrid === "TVOn" ? (
+                    )} */}
+                  {/* {activeGrid === "TVOn" ? (
                       <img
                         alt=""
                         src={TVSolid}
-                        className="mr-1 h-6 w-6 cursor-pointer"
+                        className="mr-3 h-6 w-6 cursor-pointer"
                         onClick={() => setActiveGrid("none")}
                       ></img>
                     ) : (
                       <img
                         alt=""
                         src={TVOutline}
-                        className="mr-1 h-6 w-6 cursor-pointer"
+                        className="mr-3 h-6 w-6 cursor-pointer"
                         onClick={() => setActiveGrid("TVOn")}
                       ></img>
-                    )}
-                  </div> */}
-                  {/* <Link to={"/"}>
-                    <p className="text-3xl mt-4">Prds</p>
-                  </Link> */}
+                    )} */}
+                  {/* </div> */}
                 </div>
                 <div className="flex justify-center items-center">
                   <div className="grid grid-cols-2 gap-3 mt-4 px-6">
@@ -465,7 +501,7 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
-              {data.backgroundImage === CHECK_STR ? (
+              {userPrfData.backgroundImage === CHECK_STR ? (
                 <div className="h-full w-full absolute -z-10 top-0 left-0 bg-black"></div>
               ) : (
                 // <img
@@ -475,7 +511,7 @@ const Profile = () => {
                 // ></img>
                 <img
                   className="h-full w-full absolute -z-10 top-0 left-0 object-cover object-center"
-                  src={data.backgroundImage}
+                  src={userPrfData.backgroundImage}
                   alt=""
                 ></img>
               )}

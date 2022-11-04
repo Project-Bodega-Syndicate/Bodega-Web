@@ -23,7 +23,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState("");
   const [pwd, setPwd] = useState("");
-  const [userKey, setUserKey] = useState("");
+  // const [userKey, setUserKey] = useState("");
   const [errMsg, setErrMsg] = useState("");
   const [success, setSuccess] = useState(false);
 
@@ -37,6 +37,19 @@ const Login = () => {
     setErrMsg("");
   }, [user, pwd]);
 
+  useEffect(() => {
+    if (
+      window.localStorage.getItem("id") &&
+      window.localStorage.getItem("meta_username") &&
+      window.localStorage.getItem("public_hashkey")
+    ) {
+      navigate(`/${window.localStorage.getItem("meta_username")}`, {
+        replace: true,
+      });
+    }
+    // eslint-disable-next-line
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -48,7 +61,7 @@ const Login = () => {
         headers: headers,
         // meta_username: user,
         passcode: pwd,
-        public_hashkey: userKey,
+        // public_hashkey: userKey,
       });
       // console.log(response?.data);
       // console.log(JSON.stringify(response.data));
@@ -66,10 +79,9 @@ const Login = () => {
         // setUserKey(response.data.public_hashkey);
 
         setAuth({
-          user,
-          pwd,
-          userKey,
-          // roles, accessToken
+          id: response.data.id,
+          meta_username: response.data.meta_username,
+          public_hashkey: response.data.public_hashkey,
         });
         setSuccess(true);
         navigate(`/${user}`, { replace: true });
@@ -231,7 +243,7 @@ const Login = () => {
               placeholder="Password"
             />
 
-            <label htmlFor="pubKey" className="mt-4 block">
+            {/* <label htmlFor="pubKey" className="mt-4 block">
               Public Hashkey
             </label>
             <input
@@ -243,7 +255,7 @@ const Login = () => {
               required
               className="p-1 mt-3 text-sm w-full h-14 rounded-md bg-neutral-800 text-white"
               placeholder=""
-            />
+            /> */}
 
             <button
               className="p-2 mt-4 w-full h-8 text-xs bg-neutral-700 rounded-md"

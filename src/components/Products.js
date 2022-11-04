@@ -143,7 +143,9 @@ const Products = () => {
                   (item) =>
                     item.product_image1 !== CHECK_STR &&
                     !item.product_image1.includes(".mp4") &&
-                    !item.product_image1.includes(".heic")
+                    !item.product_image1.includes(".heic") &&
+                    item.privateProduct !== true &&
+                    item.sellingPrice !== 0
                 )
                 .map((item, index) => {
                   return (
