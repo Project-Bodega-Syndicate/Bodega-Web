@@ -200,7 +200,7 @@ const Home = () => {
                   className="p-2 mt-8 h-12 w-44 bg-white text-black"
                   onClick={handleSubmit}
                 >
-                  Subscribe
+                  What's new?
                 </button>
                 {/* </div> */}
               </form>
