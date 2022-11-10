@@ -57,7 +57,7 @@ const Home = () => {
         { headers: headers }
       );
       if (res) {
-        console.log(res.data);
+        // console.log(res.data);
         setSuccess(true);
         setUserEmail("");
       }
