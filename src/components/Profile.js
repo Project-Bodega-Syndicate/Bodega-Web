@@ -5,16 +5,17 @@ import {
   useParams,
   // NavLink,
 } from "react-router-dom";
+// import MetaDecorator from "../utils/MetaDecorator";
+// import { Helmet } from "react-helmet";
 import Chevron from "../img/chevron-up.svg";
 // import TVOutline from "../img/TVOutline.svg";
 // import TVSolid from "../img/TVSolid.svg";
 // import CompassFilled from "../img/CompassFill.svg";
 // import CompassOutline from "../img/CompassOutline.svg";
-// import MetaDecorator from "../utils/MetaDecorator";
-// import { Helmet } from "react-helmet";
-import { CHECK_STR, CHECK_STR2 } from "../utils/constants";
 // import { ShoppingBagIcon } from "@heroicons/react/24/solid";
 // import { ShoppingBagIcon as ShoppingBagIconOutline } from "@heroicons/react/24/outline";
+import { CHECK_STR, CHECK_STR2 } from "../utils/constants";
+
 import useAppContext from "../hooks/useAppContext";
 
 const Profile = () => {
@@ -25,17 +26,19 @@ const Profile = () => {
     setUserPrfData,
     userPrfData2,
     setUserPrfData2,
-    // setSinglePrd,
+    // userPrdList,
+    setUserPrdList,
+    // setUserSinglePrd,
+    // activeGrid,
+    // setActiveGrid,
   } = useAppContext();
   const { id } = useParams();
   // const [data, setData] = useState([]);
   // const [data2, setData2] = useState([]);
-  // const [userPrdList, setUserPrdList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   // const [noUser, setNoUser] = useState(false);
   const [profileImg, setProfileImg] = useState("");
   const [mediaList, setMediaList] = useState([]);
-  // const [activeGrid, setActiveGrid] = useState("none");
   const [scrollValue, setScrollValue] = useState("");
   const [scrollAmt, setScrollAmt] = useState(0);
   const topRef = useRef(null);
@@ -45,7 +48,7 @@ const Profile = () => {
   // const baseURL1 = process.env.REACT_APP_BASEURL1;
   const baseURL2 = process.env.REACT_APP_BASEURL2;
   const baseURL3 = process.env.REACT_APP_BASEURL3;
-  // const userPrdURL = process.env.REACT_APP_USER_PRODUCT_URL;
+  const userPrdURL = process.env.REACT_APP_USER_PRODUCT_URL;
   const checkStr = CHECK_STR2;
 
   useEffect(() => {
@@ -121,33 +124,33 @@ const Profile = () => {
     }
   }, [userPrfData, baseURL3, setUserPrfData2, userPrfData2]);
 
-  // useEffect(() => {
-  //   const fetchUserPrd = (u_id) => {
-  //     const fetchUserPrd = async (u_id) => {
-  //       try {
-  //         const headers = {
-  //           "Content-Type": "application/json",
-  //         };
-  //         const response = await axios.post(userPrdURL, {
-  //           headers: headers,
-  //           metauserID: u_id,
-  //         });
-  //         if (response) {
-  //           // console.log("User Prd Response: ", response.data);
-  //           setUserPrdList(response.data);
-  //         }
-  //       } catch (err) {
-  //         console.log(err.response.data);
-  //       }
-  //     };
-  //     // setIsLoading(true);
-  //     fetchUserPrd(u_id);
-  //   };
+  useEffect(() => {
+    const fetchUserPrd = (u_id) => {
+      const fetchUserPrd = async (u_id) => {
+        try {
+          const headers = {
+            "Content-Type": "application/json",
+          };
+          const response = await axios.post(userPrdURL, {
+            headers: headers,
+            metauserID: u_id,
+          });
+          if (response) {
+            // console.log("User Prd Response: ", response.data);
+            setUserPrdList(response.data);
+          }
+        } catch (err) {
+          console.log(err.response.data);
+        }
+      };
+      // setIsLoading(true);
+      fetchUserPrd(u_id);
+    };
 
-  //   if (userPrfData && userPrfData.id) {
-  //     fetchUserPrd(userPrfData.ownerMetaUserID);
-  //   }
-  // }, [userPrfData, userPrdURL]);
+    if (userPrfData && userPrfData.id) {
+      fetchUserPrd(userPrfData.ownerMetaUserID);
+    }
+  }, [userPrfData, userPrdURL, setUserPrdList]);
 
   useEffect(() => {
     if (userPrfData2 && userPrfData2 !== "") {
@@ -235,7 +238,7 @@ const Profile = () => {
   }, [scrollAmt, topRef]);
 
   // const handlePrdClick = (itemData) => {
-  //   setSinglePrd(itemData);
+  //   setUserSinglePrd(itemData);
   // };
 
   return (
@@ -403,8 +406,8 @@ const Profile = () => {
                         className="text-white mr-3 h-6 w-6 inline-block cursor-pointer"
                         onClick={() => setActiveGrid("ShopOn")}
                       />
-                    )} */}
-                  {/* {activeGrid === "TVOn" ? (
+                    )}
+                    {activeGrid === "TVOn" ? (
                       <img
                         alt=""
                         src={TVSolid}
@@ -418,8 +421,8 @@ const Profile = () => {
                         className="mr-3 h-6 w-6 cursor-pointer"
                         onClick={() => setActiveGrid("TVOn")}
                       ></img>
-                    )} */}
-                  {/* </div> */}
+                    )}
+                  </div> */}
                 </div>
                 <div className="flex justify-center items-center">
                   <div className="grid grid-cols-2 gap-3 mt-4 px-6">
@@ -469,7 +472,7 @@ const Profile = () => {
                           .map((item, index) => {
                             return (
                               <NavLink
-                                to={`/product/${item.id}`}
+                                to={`/${u_name}/${item.id}`}
                                 key={index}
                                 onClick={() => handlePrdClick(item)}
                               >

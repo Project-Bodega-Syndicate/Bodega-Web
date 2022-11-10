@@ -1,34 +1,34 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  CHECK_STR,
-  // CHECK_STR2
-} from "../utils/constants";
+import { CHECK_STR } from "../utils/constants";
 import { NavLink } from "react-router-dom";
 import useAppContext from "../hooks/useAppContext";
+import BDGLOGO from "../img/proj-bdg.png";
+import PenIcon from "../img/pencil-line.svg";
+import ScribbleIcon from "../img/scribble.svg";
 
-const Products = () => {
-  const productURL = process.env.REACT_APP_PRODUCT_URL;
+const Shops = () => {
+  const shopURL = process.env.REACT_APP_SHOPS_URL;
   const [isLoading, setIsLoading] = useState(false);
   // const [productList, setProductList] = useState([]);
-  const { setSinglePrd, allPrd, setAllPrd, hashids } = useAppContext();
+  const { setSingleShop, allShops, setAllShops } = useAppContext();
 
   useEffect(() => {
-    if (allPrd && allPrd.length !== 0) {
+    if (allShops && allShops.length !== 0) {
       return;
-    } else if (!allPrd || allPrd.length === 0) {
-      const fetchProducts = () => {
-        const fetchProducts = async () => {
+    } else if (!allShops || allShops.length === 0) {
+      const fetchShops = () => {
+        const fetchShops = async () => {
           try {
             const headers = {
               "Content-Type": "application/json",
             };
-            const response = await axios.post(productURL, {
+            const response = await axios.post(shopURL, {
               headers: headers,
             });
             if (response) {
               // console.log("Product API Response: ", response.data);
-              setAllPrd(response.data);
+              setAllShops(response.data);
               setIsLoading(false);
               // if (response.data.length === 0) {
               //   setIsLoading(false);
@@ -41,20 +41,20 @@ const Products = () => {
           }
         };
         setIsLoading(true);
-        fetchProducts();
+        fetchShops();
       };
-      fetchProducts();
+      fetchShops();
     }
-  }, [productURL, allPrd, setAllPrd]);
+  }, [shopURL, setAllShops]);
 
   // useEffect(() => {
-  //   if (allPrd) {
-  //     console.log("AllPrds", allPrd);
+  //   if (allShops) {
+  //     console.log("allShopss", allShops);
   //   }
-  // }, [allPrd]);
+  // }, [allShops]);
 
-  const handlePrdClick = (itemData) => {
-    setSinglePrd(itemData);
+  const handleShopClick = (itemData) => {
+    setSingleShop(itemData);
   };
 
   return (
@@ -130,37 +130,58 @@ const Products = () => {
             />
           </svg>
         </div>
-      ) : allPrd && allPrd.length !== 0 ? (
+      ) : allShops && allShops.length !== 0 ? (
         <section className="flex flex-col justify-center items-center">
           <div className="text-white mt-10">
-            <p>Products</p>
+            <p>Shops</p>
           </div>
           <div className="grid grid-cols-2 gap-3 mt-8 px-6">
-            {allPrd &&
-              allPrd.length !== 0 &&
-              allPrd
+            <div className="flex flex-col justify-between items-center text-center h-36 border-4 py-2 border-green-500 rounded-md text-yellow-200">
+              <img alt="" src={BDGLOGO} className="w-24"></img>
+              <p className="text-sm mt-2">Create Shop</p>
+              <div className="flex flex-row justify-between items-center">
+                <img className="mx-2" src={PenIcon}></img>
+                <img className="mx-2" src={ScribbleIcon}></img>
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-between items-center text-center h-36 border-4 py-2 border-green-500 rounded-md text-yellow-200">
+              <img alt="" src={BDGLOGO} className="w-24"></img>
+              <p className="text-sm mt-2">Create Shop</p>
+              <div className="flex flex-row justify-between items-center">
+                <img className="mx-2" src={PenIcon}></img>
+                <img className="mx-2" src={ScribbleIcon}></img>
+              </div>
+            </div>
+
+            {allShops &&
+              allShops.length !== 0 &&
+              allShops
                 .filter(
                   (item) =>
-                    item.product_image1 !== CHECK_STR &&
-                    !item.product_image1.includes(".mp4") &&
-                    !item.product_image1.includes(".heic") &&
+                    item.libraryCoverImage !== CHECK_STR &&
+                    !item.libraryCoverImage.includes(".mp4") &&
+                    !item.libraryCoverImage.includes(".heic") &&
                     item.privateProduct !== true &&
                     item.sellingPrice !== 0
                 )
                 .map((item, index) => {
                   return (
                     <NavLink
-                      // to={`/product/${item.id}`}
-                      to={`/product/${hashids.encode(item.id)}`}
+                      to={`/shop/${item.id}`}
                       key={index}
-                      onClick={() => handlePrdClick(item)}
+                      onClick={() => handleShopClick(item)}
                     >
-                      <img
-                        className="w-40 h-56 object-cover rounded-xl cursor-pointer"
-                        src={item.product_image1}
-                        alt=""
-                        key={index}
-                      ></img>
+                      <div className="flex flex-col justify-start items-center text-center border-2 border-white rounded-md text-white">
+                        <img
+                          className="w-44 h-56 object-cover rounded-xl cursor-pointer"
+                          src={item.libraryCoverImage}
+                          alt=""
+                          key={index}
+                        ></img>
+                        <p className="text-sm mt-2">{item.headingText}</p>
+                        <p className="text-sm my-2">{item.subheadingText}</p>
+                      </div>
                     </NavLink>
                   );
                 })}
@@ -168,11 +189,11 @@ const Products = () => {
         </section>
       ) : (
         <div className="flex justify-center items-center h-screen w-full text-white">
-          <p className="mt-10">No products at the moment</p>
+          <p className="mt-10">No shops at the moment</p>
         </div>
       )}
     </div>
   );
 };
 
-export default Products;
+export default Shops;

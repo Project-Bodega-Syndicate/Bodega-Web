@@ -5,7 +5,7 @@ import BDGLOGO from "../img/proj-bdg.png";
 import {
   Link,
   useNavigate,
-  // useLocation,
+  useLocation,
   // Navigate,
 } from "react-router-dom";
 // import axios from "../api/axios";
@@ -14,8 +14,8 @@ const LOGIN_URL = process.env.REACT_APP_LOGIN_URL;
 
 const Login = () => {
   const navigate = useNavigate();
-  // const location = useLocation();
-  // const from = location.state?.from?.pathname || "/";
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
   const { setAuth } = useAuth();
   const userRef = useRef();
   const errRef = useRef();
@@ -47,8 +47,11 @@ const Login = () => {
         replace: true,
       });
     }
-    // eslint-disable-next-line
-  }, []);
+  }, [navigate]);
+
+  // useEffect(() => {
+  //   console.log(from);
+  // }, [from]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,7 +87,13 @@ const Login = () => {
           public_hashkey: response.data.public_hashkey,
         });
         setSuccess(true);
-        navigate(`/${user}`, { replace: true });
+        if (from && from !== "/") {
+          navigate(from, {
+            replace: true,
+          });
+        } else {
+          navigate(`/${user}`, { replace: true });
+        }
       }
     } catch (err) {
       setIsLoading(false);

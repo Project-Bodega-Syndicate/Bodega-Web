@@ -1,42 +1,41 @@
 import React from "react";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useAppContext from "../hooks/useAppContext";
-import axios from "axios";
-// import Modal from "./Modal.js";
 import Modal2 from "./Modal2.js";
 
-const ProductDetails = () => {
-  const {
-    // id,
-    pid,
-  } = useParams();
+const UserProductDetails = () => {
+  const { id, pid } = useParams();
   const navigate = useNavigate();
-  const { singlePrd, setSinglePrd, setUserPrfData, hashList, hashids } =
-    useAppContext();
+  const {
+    noUser,
+    setNoUser,
+    userPrfData,
+    setUserPrfData,
+    userPrdList,
+    setUserPrdList,
+    userSinglePrd,
+    setUserSinglePrd,
+    hashList,
+    hashids,
+  } = useAppContext();
 
-  // const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [prdOwner, setPrdOwner] = useState([]);
+  // const [prdOwner, setPrdOwner] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [noPrdErr, setNoPrdErr] = useState(false);
   const [decodedId, setDecodedId] = useState([]);
 
-  const prdURL = process.env.REACT_APP_PRODUCT_DETAIL_URL;
-  const baseURL4 = process.env.REACT_APP_BASEURL4;
-
-  // useEffect(() => {
-  //   console.log("Single Product Data: ", singlePrd);
-  // }, [singlePrd]);
-
-  // useEffect(() => {
-  //   if (singlePrd && singlePrd.id) {
-  //     console.log(singlePrd);
-  //   }
-  // }, [singlePrd]);
+  const u_name = id;
+  // const prdURL = process.env.REACT_APP_PRODUCT_DETAIL_URL;
+  // const baseURL4 = process.env.REACT_APP_BASEURL4;
+  const baseURL2 = process.env.REACT_APP_BASEURL2;
+  const userPrdURL = process.env.REACT_APP_USER_PRODUCT_URL;
 
   useEffect(() => {
     if (hashList) {
+      // console.log(hashList);
       setNoPrdErr(true);
       hashList.forEach((x) => {
         if (pid === x) {
@@ -49,78 +48,118 @@ const ProductDetails = () => {
     }
   }, [hashList, hashids, pid]);
 
+  // useEffect(() => {
+  //   console.log("Single Product Data: ", singlePrd);
+  // }, [singlePrd]);
+
+  // useEffect(() => {
+  //   if (userPrfData && userPrfData.id) {
+  //     console.log(userPrfData);
+  //   }
+  // }, [userPrfData]);
+
+  // useEffect(() => {
+  //   if (userSinglePrd && userSinglePrd.id) {
+  //     console.log(userSinglePrd);
+  //   }
+  // }, [userSinglePrd]);
+
   useEffect(() => {
-    if (singlePrd && singlePrd.product_image1) {
+    if (userPrfData && userPrfData.id) {
       return;
-    } else if (!singlePrd || !singlePrd.product_image1) {
-      if (pid && decodedId[0]) {
-        const fetchProductDetail = () => {
-          const fetchProductDetail = async () => {
+    } else if (!userPrfData || !userPrfData.id) {
+      if (id) {
+        const fetchData = (u_name) => {
+          const fetchData = async (u_name) => {
             try {
               const headers = {
                 "Content-Type": "application/json",
               };
-              const response = await axios.get(`${prdURL}${decodedId[0]}/`, {
+              const response = await axios.post(baseURL2, {
                 headers: headers,
+                metausername: u_name,
               });
               if (response) {
-                // console.log("Product Detail API Response: ", response);
-                setSinglePrd(response.data);
-                setIsLoading(false);
-                // if (response.data.length === 0) {
-                //   setIsLoading(false);
-                // } else {
-                //   setData(response.data[0]);
-                // }
+                // console.log("API Response: ", response.userPrfData);
+                if (response.data.length === 0) {
+                  setIsLoading(false);
+                  setNoUser(true);
+                } else {
+                  setUserPrfData(response.data[0]);
+                }
               }
             } catch (err) {
-              console.log(err.response);
+              console.log(err.response.data);
             }
           };
           setIsLoading(true);
-          fetchProductDetail();
+          fetchData(u_name);
         };
-        fetchProductDetail();
+        fetchData(u_name);
       } else {
-        setIsLoading(true);
+        // setIsLoading(true);
       }
     }
-  }, [singlePrd, pid, decodedId, prdURL, setSinglePrd]);
+  }, [u_name, baseURL2, id, setNoUser, setUserPrfData, userPrfData]);
 
   useEffect(() => {
-    if (singlePrd && singlePrd.id && singlePrd.metauserID) {
-      const fetchMetaUser = () => {
-        const fetchMetaUser = async () => {
-          try {
-            const headers = {
-              "Content-Type": "application/json",
-            };
-            const response = await axios.post(baseURL4, {
-              headers: headers,
-              ownerMetaUserID: singlePrd.metauserID,
-            });
-            if (response) {
-              // console.log("Product's Metauser: ", response.data);
-              if (response.data.length === 0) {
-                setPrdOwner([]);
-              } else {
-                setPrdOwner(response.data[0]);
+    if (userPrdList && userPrdList.length !== 0) {
+      return;
+    } else if (!userPrdList || userPrdList.length === 0) {
+      if (userPrfData && userPrfData.id && !noUser) {
+        const fetchUserPrd = (u_id) => {
+          const fetchUserPrd = async (u_id) => {
+            try {
+              const headers = {
+                "Content-Type": "application/json",
+              };
+              const response = await axios.post(userPrdURL, {
+                headers: headers,
+                metauserID: u_id,
+              });
+              if (response) {
+                setIsLoading(false);
+                // console.log("User Prd Response: ", response.data);
+                setUserPrdList(response.data);
               }
+            } catch (err) {
+              console.log(err.response.data);
             }
-          } catch (err) {
-            console.log(err.response);
-          }
+          };
+          setIsLoading(true);
+          fetchUserPrd(u_id);
         };
-        fetchMetaUser();
-      };
-      fetchMetaUser();
+        fetchUserPrd(userPrfData.ownerMetaUserID);
+      }
     }
-  }, [singlePrd, baseURL4]);
+
+    // if (userPrfData && userPrfData.id && !noUser) {
+    //   fetchUserPrd(userPrfData.ownerMetaUserID);
+    // }
+  }, [userPrfData, userPrdURL, noUser, userPrdList, setUserPrdList]);
+
+  useEffect(() => {
+    if (userSinglePrd && userSinglePrd.product_image1) {
+      return;
+    } else if (!userSinglePrd || !userSinglePrd.product_image1) {
+      if (pid && decodedId[0] && userPrdList) {
+        setNoPrdErr(true);
+        userPrdList.forEach((x) => {
+          if (decodedId[0] === x.id) {
+            setUserSinglePrd(x);
+            setNoPrdErr(false);
+          }
+        });
+      } else {
+        // setIsLoading(true);
+        // setNoPrdErr(true);
+      }
+    }
+  }, [pid, decodedId, userSinglePrd, setUserSinglePrd, userPrdList]);
 
   const handleVisitCreator = () => {
-    if (prdOwner && prdOwner.id) {
-      setUserPrfData(prdOwner);
-      navigate(`/${prdOwner.metausername}`);
+    if (userPrfData && userPrfData.id) {
+      navigate(`/${userPrfData.metausername}`);
     }
   };
 
@@ -133,7 +172,7 @@ const ProductDetails = () => {
       <Modal2 showModal={showModal} setShowModal={setShowModal} />
 
       <div className="flex flex-col justify-start items-center h-screen w-full px-4 pt-12 text-white">
-        {isLoading && !noPrdErr ? (
+        {isLoading ? (
           <div className="loadingCont flex justify-center items-center h-screen w-full">
             <svg
               width="214"
@@ -208,27 +247,33 @@ const ProductDetails = () => {
           <div className="flex justify-center items-center h-full w-full text-white">
             <p className="mt-10">Invalid Product URL</p>
           </div>
+        ) : noUser ? (
+          <div className="flex justify-center items-center h-full w-full text-white">
+            <p className="mt-10">No public link exists for this user</p>
+          </div>
         ) : (
+          userSinglePrd &&
           !isLoading &&
-          !noPrdErr && (
+          !noPrdErr &&
+          !noUser && (
             <>
               <div className="w-full">
                 <img
                   className="w-full"
                   alt=""
-                  src={singlePrd.product_image1}
+                  src={userSinglePrd.product_image1}
                 ></img>
               </div>
               <div className="flex flex-row justify-between w-full mt-10 px-2">
                 <div className="w-6/12">
-                  <p>{singlePrd.productName}</p>
+                  <p>{userSinglePrd.productName}</p>
                 </div>
                 <div className="flex flex-col items-center justify-center">
-                  <p>${singlePrd.sellingPrice}</p>
+                  <p>${userSinglePrd.sellingPrice}</p>
                 </div>
               </div>
               <div className="mt-16 px-6">
-                <p>{singlePrd.producDescription}</p>
+                <p>{userSinglePrd.producDescription}</p>
               </div>
               <button
                 className="p-2 mt-10 h-10 bg-sky-600 rounded-lg text-center"
@@ -258,4 +303,4 @@ const ProductDetails = () => {
   );
 };
 
-export default ProductDetails;
+export default UserProductDetails;
