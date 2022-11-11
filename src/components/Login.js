@@ -8,7 +8,6 @@ import {
   useLocation,
   // Navigate,
 } from "react-router-dom";
-// import axios from "../api/axios";
 import axios from "axios";
 const LOGIN_URL = process.env.REACT_APP_LOGIN_URL;
 
