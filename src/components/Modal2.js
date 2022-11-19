@@ -5,37 +5,83 @@ import React, {
   useState,
 } from "react";
 import axios from "axios";
-import { XMarkIcon } from "@heroicons/react/24/solid";
-import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import useAuth from "../hooks/useAuth";
+// import PaymentForm from "./PaymentForm";
+import { ChevronLeftIcon } from "@heroicons/react/24/solid";
+import useAppContext from "../hooks/useAppContext";
+import {
+  XMarkIcon,
+  CheckIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/20/solid";
+import StripeIcon from "../img/StripeIcon.svg";
+import StripeMark from "../img/StripeMark.svg";
+
 const LOGIN_URL = process.env.REACT_APP_LOGIN_URL;
+const CREATE_CUST_URL = process.env.REACT_APP_CREATE_CUST_URL;
+const GET_SELLER_DET = process.env.REACT_APP_GET_SELLER_DET;
+const FILTER_CUST_PAYMENT = process.env.REACT_APP_FILTER_CUST_PAYMENT;
+const REGISTER_URL = process.env.REACT_APP_REGISTER_URL;
+const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
+const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 
 const Modal2 = ({ showModal, setShowModal }) => {
-  // const { singlePrd } = useAppContext();
   const { auth, setAuth } = useAuth();
+  const { singlePrd } = useAppContext();
+
   const modalRef = useRef();
   const emailRef = useRef();
   const nameRef = useRef();
   const userUnameRef = useRef();
+  const newUnameRef = useRef();
   const errRef = useRef();
 
   const [formMode, setFormMode] = useState("initial");
-  const [fullName, setFullName] = useState("");
-  const [pwd, setPwd] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  const [cardNo, setCardNo] = useState("");
-  const [zipcode, setZipcode] = useState("");
-  const [cvc, setCvc] = useState("");
-  const [userUname, setUserUname] = useState("");
-  const [pwd2, setPwd2] = useState("");
   const [errMsg, setErrMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [custPaymentDet, setCustPaymentDet] = useState({});
   const [existLoginSuccess, setExistLoginSuccess] = useState(false);
+  const [sellerDet, setSellerDet] = useState("");
+
+  // For Register new user
+  const [newUname, setNewUname] = useState("");
+  const [validNewUname, setValidNewUname] = useState(false);
+  const [newUnameFocus, setNewUnameFocus] = useState();
+  const [pwd, setPwd] = useState("");
+  const [validPwd, setValidPwd] = useState(false);
+  const [pwdFocus, setPwdFocus] = useState();
+
+  // For adding user card details
+  const [fullName, setFullName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [cardNo, setCardNo] = useState(null);
+  const [cardMM, setCardMM] = useState(null);
+  const [cardYY, setCardYY] = useState(null);
+  const [cvc, setCvc] = useState(null);
+
+  // For user login
+  const [userUname, setUserUname] = useState("");
+  const [pwd2, setPwd2] = useState("");
+
+  // const flushDataFields = () => {
+  //   setFullName("");
+  //   setNewUname("");
+  //   setPwd("");
+  //   setUserEmail("");
+  //   setCardNo(null);
+  //   setCardMM(null);
+  //   setCardYY(null);
+  //   setCvc(null);
+  //   setErrMsg("");
+  // }
 
   useEffect(() => {
     setErrMsg("");
-  }, [userUname, pwd2]);
+  }, [newUname, pwd, userUname, pwd2]);
+
+  useEffect(() => {
+    setErrMsg("");
+  }, [newUname, pwd, userUname, pwd2]);
 
   useEffect(() => {
     setShowModal(false);
@@ -43,17 +89,36 @@ const Modal2 = ({ showModal, setShowModal }) => {
   }, [setShowModal]);
 
   useEffect(() => {
+    setValidNewUname(USER_REGEX.test(newUname));
+  }, [newUname]);
+
+  useEffect(() => {
+    setValidPwd(PWD_REGEX.test(pwd));
+    // setValidMatch(pwd === matchPwd);
+  }, [pwd]);
+
+  useEffect(() => {
     if (formMode && formMode === "new") {
       if (nameRef && nameRef.current) {
         nameRef.current.focus();
       }
     } else if (formMode && formMode === "new2") {
-      if (emailRef && emailRef.current) {
-        emailRef.current.focus();
+      if (newUnameRef && newUnameRef.current) {
+        newUnameRef.current.focus();
       }
-    } else if (formMode && formMode === "existing") {
+    }
+    // else if (formMode && formMode === "new3") {
+    //   if (newUnameRef && newUnameRef.current) {
+    //     newUnameRef.current.focus();
+    //   }
+    // }
+    else if (formMode && formMode === "existing") {
       if (userUnameRef && userUnameRef.current) {
         userUnameRef.current.focus();
+      }
+    } else if (formMode && formMode === "existing2") {
+      if (nameRef && nameRef.current) {
+        nameRef.current.focus();
       }
     }
   }, [formMode, nameRef, emailRef, userUnameRef]);
@@ -84,27 +149,169 @@ const Modal2 = ({ showModal, setShowModal }) => {
   const handleCloseModal = () => {
     setShowModal((prev) => !prev);
     setFormMode("initial");
+
+    setFullName("");
+    setNewUname("");
+    setPwd("");
+    setUserEmail("");
+    setCardNo(null);
+    setCardMM(null);
+    setCardYY(null);
+    setCvc(null);
+    setUserUname("");
+    setPwd2("");
+    setErrMsg("");
   };
 
   // const handleNewSubmit = () => {};
 
+  const fetchCustPaymentDet = async () => {
+    try {
+      setIsLoading(true);
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      const response = await axios.post(FILTER_CUST_PAYMENT, {
+        headers: headers,
+        metauserID: auth.id,
+      });
+      // console.log(response?.data);
+      setIsLoading(false);
+      if (response.data && response.data.length !== 0) {
+        // console.log(response.data[0]);
+        setCustPaymentDet(response.data[0]);
+        setFormMode("existing3");
+      } else if (response.data && response.data === []) {
+        setCustPaymentDet({});
+        setFormMode("existing2");
+      }
+    } catch (err) {
+      setIsLoading(false);
+      console.log(err);
+    }
+  };
+
   // useEffect(() => {
-  //   if (singlePrd && singlePrd.product_image1) {
-  //     console.log(singlePrd);
+  //   if (auth && auth.id && auth.meta_username && auth.public_hashkey) {
+  //     fetchCustPaymentDet();
   //   }
-  // }, [singlePrd]);
+  // }, [auth]);
+
+  useEffect(() => {
+    if (singlePrd && singlePrd.product_image1) {
+      // console.log(singlePrd);
+      // console.log(typeof singlePrd.sellingPrice);
+
+      const fetchSellerDetails = () => {
+        const fetchSellerDetails = async () => {
+          try {
+            //  setIsLoading(true);
+            const headers = {
+              "Content-Type": "application/json",
+            };
+            const response = await axios.post(GET_SELLER_DET, {
+              headers: headers,
+              metauserID: singlePrd.metauserID,
+            });
+            console.log("Seller Details: ", response?.data);
+            //  setIsLoading(false);
+            if (response.data) {
+              setSellerDet(response.data[0].stripeAccountID);
+            }
+          } catch (err) {
+            //  setIsLoading(false);
+            console.log(err);
+          }
+        };
+        fetchSellerDetails();
+      };
+      fetchSellerDetails();
+    }
+  }, [singlePrd]);
 
   const handleBackBtn = () => {
     if (formMode && formMode === "initial") {
       return;
     } else if (formMode && formMode === "new") {
       setFormMode("initial");
-    } else if (formMode && formMode === "new2") {
-      setFormMode("new");
     } else if (formMode && formMode === "existing") {
       setFormMode("initial");
     } else if (formMode && formMode === "existing2") {
       setFormMode("initial");
+    } else if (formMode && formMode === "existing3") {
+      setFormMode("initial");
+    }
+  };
+
+  const handleRegisterUser = async (e) => {
+    e.preventDefault();
+    // if button enabled with JS hack
+    const v1 = USER_REGEX.test(newUname);
+    const v2 = PWD_REGEX.test(pwd);
+    if (!v1 || !v2) {
+      setErrMsg("Invalid Entry");
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      const response = await axios.post(REGISTER_URL, {
+        headers: headers,
+        meta_username: newUname,
+        passcode: pwd,
+      });
+      // console.log(response?.data);
+      // console.log(JSON.stringify(response));
+      if (response.data) {
+        setIsLoading(false);
+        if (response.data.id) {
+          // setAuth()
+          setFormMode("existing2");
+        }
+      }
+      //clear state and controlled inputs
+      //need value attrib on inputs for this
+      setNewUname("");
+      setPwd("");
+    } catch (err) {
+      setIsLoading(false);
+      console.log(err);
+      if (!err?.response) {
+        setErrMsg("No Server Response");
+      } else if (err.response?.status === 409) {
+        setErrMsg("Username Taken");
+      } else if (
+        err.response?.data.meta_username[0] ===
+        "meta user with this meta username already exists."
+      ) {
+        setErrMsg("Username already exists");
+      } else {
+        setErrMsg("Registration Failed");
+      }
+      if (errRef.current) {
+        errRef.current.focus();
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (existLoginSuccess) {
+      fetchCustPaymentDet();
+    }
+  }, [existLoginSuccess]);
+
+  const handleExistingBtnClick = () => {
+    if (auth && auth.id && auth.meta_username && auth.public_hashkey) {
+      setExistLoginSuccess(true);
+      if (custPaymentDet) {
+        setFormMode("existing3");
+      } else {
+        setFormMode("existing2");
+      }
+    } else {
+      setFormMode("existing");
     }
   };
 
@@ -139,7 +346,8 @@ const Modal2 = ({ showModal, setShowModal }) => {
           public_hashkey: response.data.public_hashkey,
         });
         setExistLoginSuccess(true);
-        setFormMode("existing2");
+        // fetchCustPaymentDet();
+        // setFormMode("existing3")
       }
     } catch (err) {
       setIsLoading(false);
@@ -159,22 +367,111 @@ const Modal2 = ({ showModal, setShowModal }) => {
     }
   };
 
-  const handleExistingBtnClick = () => {
-    if (auth && auth.id && auth.meta_username && auth.public_hashkey) {
-      setExistLoginSuccess(true);
-      setFormMode("existing2");
-    } else {
-      setFormMode("existing");
+  // const handleExistingLogout = async () => {
+  //   localStorage.removeItem("id");
+  //   localStorage.removeItem("meta_username");
+  //   localStorage.removeItem("public_hashkey");
+  //   setAuth({});
+  //   setExistLoginSuccess(false);
+  //   setFormMode("existing");
+  // };
+
+  const handleCardSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setIsLoading(true);
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      const response = await axios.post(CREATE_CUST_URL, {
+        headers: headers,
+        email: userEmail,
+        number: cardNo,
+        exp_month: cardMM,
+        exp_year: cardYY,
+        cvc: cvc,
+        metauserID: auth.id,
+      });
+      console.log(response?.data);
+      setIsLoading(false);
+      if (
+        response.data &&
+        response.data.id &&
+        response.data.customerID &&
+        response.data.paymentMethodID &&
+        response.data.metauserID
+      ) {
+        setCustPaymentDet(response.data);
+        setFormMode("existing3");
+        setFullName("");
+        setNewUname("");
+        setPwd("");
+        setUserEmail("");
+        setCardNo(null);
+        setCardMM(null);
+        setCardYY(null);
+        setCvc(null);
+        setErrMsg("");
+      }
+    } catch (err) {
+      setIsLoading(false);
+      console.log(err);
+      if (!err?.response) {
+        setErrMsg("No Server Response");
+      } else if (err.response?.status === 400) {
+        setErrMsg("Missing Username or Password");
+      } else if (err.response?.status === 401) {
+        setErrMsg("Unauthorized");
+      } else {
+        setErrMsg("Login Failed");
+      }
+      if (errRef.current) {
+        errRef.current.focus();
+      }
     }
   };
 
-  const handleExistingLogout = async () => {
-    localStorage.removeItem("id");
-    localStorage.removeItem("meta_username");
-    localStorage.removeItem("public_hashkey");
-    setAuth({});
-    setExistLoginSuccess(false);
-    setFormMode("existing");
+  const confirmPurchase = async (e) => {
+    e.preventDefault();
+
+    try {
+      setIsLoading(true);
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      const response = await axios.post(CREATE_CUST_URL, {
+        headers: headers,
+        amount: singlePrd.sellingPrice,
+        currency: "usd",
+        description: "Testing Cash Ledger",
+        customerID: custPaymentDet.customerID,
+        paymentMethodID: custPaymentDet.paymentMethodID,
+        bodegaCustomerID: custPaymentDet.id,
+        stripeAccountInfoID: sellerDet,
+        metauserID: auth.id,
+      });
+      console.log(response?.data);
+      setIsLoading(false);
+      if (response.data) {
+        //  return;
+      }
+    } catch (err) {
+      setIsLoading(false);
+      console.log(err);
+      if (!err?.response) {
+        setErrMsg("No Server Response");
+      } else if (err.response?.status === 400) {
+        setErrMsg("Missing Username or Password");
+      } else if (err.response?.status === 401) {
+        setErrMsg("Unauthorized");
+      } else {
+        setErrMsg("Login Failed");
+      }
+      if (errRef.current) {
+        errRef.current.focus();
+      }
+    }
   };
 
   return (
@@ -185,17 +482,19 @@ const Modal2 = ({ showModal, setShowModal }) => {
           ref={modalRef}
           className="flex flex-col justify-center items-center w-full h-full fixed bg-black/75"
         >
-          <div className="flex flex-col justify-start items-center w-80 h-96 bg-neutral-800 rounded-lg">
-            <div className="flex flex-row min-w-full justify-end items-center">
-              <XMarkIcon
-                className="w-8 text-white cursor-pointer align-right mr-1 mt-1"
-                aria-label="Close modal"
-                onClick={() => handleCloseModal()}
-              />
-            </div>
+          <div className="flex flex-col justify-start items-center w-80 h-4/6 bg-neutral-800 rounded-lg">
+            {formMode && formMode === "initial" && (
+              <div className="flex flex-row min-w-full justify-end items-center">
+                <XMarkIcon
+                  className="w-8 text-white cursor-pointer align-right mr-1 mt-1"
+                  aria-label="Close modal"
+                  onClick={() => handleCloseModal()}
+                />
+              </div>
+            )}
             {formMode && formMode !== "initial" && (
-              <div className="flex flex-row min-w-full justify-start items-center px-4">
-                <div className="flex flex-col justify-start items-start text-center text-white border-2 border-white rounded-xl">
+              <div className="flex flex-row min-w-full justify-start items-center px-4 pt-4">
+                <div className="flex flex-col justify-start items-start mt-1 text-center text-white border-2 border-white rounded-xl">
                   <p
                     className="cursor-pointer text-center mr-2"
                     onClick={() => handleBackBtn()}
@@ -312,95 +611,216 @@ const Modal2 = ({ showModal, setShowModal }) => {
               ) : !isLoading && formMode && formMode === "new" ? (
                 <div className="flex flex-col justify-center items-center h-full w-full px-4">
                   <form className="flex flex-col w-full">
+                    <label htmlFor="username" className="mt-4 block text-white">
+                      Username
+                      <CheckIcon
+                        className={
+                          validNewUname
+                            ? "text-lime-500 ml-1 h-6 w-6 inline-block"
+                            : "hidden"
+                        }
+                      />
+                      <XMarkIcon
+                        className={
+                          validNewUname || !newUname
+                            ? "hidden"
+                            : "text-red-600 ml-1 h-6 w-6 inline-block"
+                        }
+                      />
+                    </label>
                     <input
-                      ref={nameRef}
                       type="text"
                       id="username"
+                      ref={newUnameRef}
+                      required
                       autoComplete="off"
-                      onChange={(e) => setFullName(e.target.value)}
-                      value={fullName}
-                      // required
-                      className="p-2 mt-3 text-sm w-full h-12 rounded-md text-black"
+                      value={newUname}
+                      onChange={(e) => setNewUname(e.target.value)}
                       placeholder="Full Name"
+                      aria-invalid={validNewUname ? "false" : "true"}
+                      aria-describedby="uidnote"
+                      onFocus={() => setNewUnameFocus(true)}
+                      onBlur={() => setNewUnameFocus(false)}
+                      className="p-2 mt-3 text-sm w-full h-12 rounded-md text-black"
                     />
+                    <p
+                      id="uidnote"
+                      className={
+                        newUnameFocus && !validNewUname
+                          ? "text-xs rounded-lg	bg-red-500 p-1 relative text-white -bottom-2.5"
+                          : "absolute hidden"
+                      }
+                    >
+                      <InformationCircleIcon className="mr-1 h-5 w-5 inline-block" />
+                      4 to 24 characters.
+                      <br />
+                      Must begin with a letter.
+                      <br />
+                      Letters, numbers, underscores, hyphens allowed.
+                    </p>
+                    <label htmlFor="password" className="mt-4 block text-white">
+                      Password
+                      <CheckIcon
+                        className={
+                          validPwd
+                            ? "text-lime-500 ml-1 h-6 w-6 inline-block"
+                            : "hidden"
+                        }
+                      />
+                      <XMarkIcon
+                        className={
+                          validPwd || !pwd
+                            ? "hidden"
+                            : "text-red-600 ml-1 h-6 w-6 inline-block"
+                        }
+                      />
+                    </label>
                     <input
                       type="password"
                       id="password"
                       onChange={(e) => setPwd(e.target.value)}
                       value={pwd}
-                      // required
+                      required
+                      onFocus={() => setPwdFocus(true)}
+                      onBlur={() => setPwdFocus(false)}
                       className="p-2 mt-3 text-sm w-full h-12 rounded-md  text-black"
                       placeholder="Password"
                     />
+                    <p
+                      id="pwdnote"
+                      className={
+                        pwdFocus && !validPwd
+                          ? "text-xs rounded-lg	bg-red-500 p-1 relative text-white -bottom-2.5"
+                          : "absolute hidden"
+                      }
+                    >
+                      <InformationCircleIcon className="mr-1 h-5 w-5 inline-block" />
+                      8 to 24 characters.
+                      <br />
+                      Must include uppercase and lowercase letters, a number and
+                      a special character.
+                      <br />
+                      Allowed special characters:{" "}
+                      <span aria-label="exclamation mark">!</span>{" "}
+                      <span aria-label="at symbol">@</span>{" "}
+                      <span aria-label="hashtag">#</span>{" "}
+                      <span aria-label="dollar sign">$</span>{" "}
+                      <span aria-label="percent">%</span>
+                    </p>
 
                     <button
                       className="p-2 mt-7 w-full h-12 text-white bg-neutral-700 rounded-md"
-                      onClick={() => setFormMode("new2")}
+                      onClick={() => handleRegisterUser}
                     >
-                      Submit
+                      Register
                     </button>
                   </form>
                 </div>
-              ) : !isLoading && formMode && formMode === "new2" ? (
-                <div className="flex flex-col justify-center items-center h-full w-full px-4">
-                  <form className="flex flex-col w-full">
-                    <input
-                      ref={emailRef}
-                      type="email"
-                      id="userEmail"
-                      autoComplete="off"
-                      onChange={(e) => setUserEmail(e.target.value)}
-                      value={userEmail}
-                      required
-                      className="p-2 mt-3 text-sm w-full h-12 rounded-md text-black"
-                      placeholder="Email Address"
-                    />
-                    <input
-                      type="number"
-                      id="cno"
-                      onChange={(e) => setCardNo(e.target.value)}
-                      value={cardNo}
-                      required
-                      className="p-2 mt-3 text-sm w-full h-12 rounded-md  text-black"
-                      placeholder="Card Number"
-                    />
-                    <div className="flex flex-row w-full justify-start items-center">
-                      <input
-                        type="number"
-                        id="zipcode"
-                        onChange={(e) => setZipcode(e.target.value)}
-                        value={zipcode}
-                        required
-                        className="p-2 mt-3 mr-1 text-sm h-12 w-2/4 rounded-md  text-black"
-                        placeholder="Zipcode"
-                      />
-                      <input
-                        type="number"
-                        id="cvc"
-                        onChange={(e) => setCvc(e.target.value)}
-                        value={cvc}
-                        required
-                        className="p-2 mt-3 ml-1 text-sm h-12 w-2/4 rounded-md  text-black"
-                        placeholder="CVC"
-                      />
-                    </div>
+              ) : //   : !isLoading && formMode && formMode === "new2" ? (
+              // // More conditions needed here
+              // <div className="flex flex-col justify-center items-center h-full w-full px-4">
+              //   <form
+              //     className="flex flex-col w-full"
+              //     // onSubmit={handleCardSubmit}
+              //   >
+              //     <input
+              //       ref={nameRef}
+              //       type="text"
+              //       id="username"
+              //       autoComplete="off"
+              //       onChange={(e) => setFullName(e.target.value)}
+              //       value={fullName}
+              //       required
+              //       className="p-2 mt-3 text-sm w-full h-12 rounded-md text-black"
+              //       placeholder="Full Name"
+              //     />
+              //     <input
+              //       ref={emailRef}
+              //       type="email"
+              //       id="userEmail"
+              //       autoComplete="off"
+              //       onChange={(e) => setUserEmail(e.target.value)}
+              //       value={userEmail}
+              //       required
+              //       className="p-2 mt-3 text-sm w-full h-12 rounded-md text-black"
+              //       placeholder="Email Address"
+              //     />
+              //     <input
+              //       type="number"
+              //       id="cno"
+              //       onChange={(e) => setCardNo(e.target.value)}
+              //       value={cardNo}
+              //       required
+              //       className="rmArrow p-2 mt-3 text-sm w-full h-12 rounded-md  text-black"
+              //       placeholder="Card Number"
+              //     />
+              //     <div className="flex flex-row w-full justify-start items-center">
+              //       <input
+              //         type="number"
+              //         id="cardMM"
+              //         onChange={(e) => setCardMM(e.target.value)}
+              //         value={cardMM}
+              //         required
+              //         className="rmArrow p-2 mt-3 mr-1 text-sm h-12 w-1/4 rounded-md  text-black"
+              //         placeholder="MM"
+              //       />
+              //       {/* <select
+              //         name="category"
+              //         id="cardMM"
+              //         value={cardMM}
+              //         required
+              //         className="p-2 mt-3 mr-1 text-sm h-12 w-1/4 rounded-md  text-black"
+              //         onChange={(e) => setCardMM(e.target.value)}
+              //       >
+              //         <option value={"01"}>01</option>
+              //         <option value={"02"}>02</option>
+              //         <option value={"03"}>03</option>
+              //         <option value={"04"}>04</option>
+              //         <option value={"05"}>05</option>
+              //         <option value={"06"}>06</option>
+              //         <option value={"07"}>07</option>
+              //         <option value={"08"}>08</option>
+              //         <option value={"09"}>09</option>
+              //         <option value={"10"}>10</option>
+              //         <option value={"11"}>11</option>
+              //         <option value={"12"}>12</option>
+              //       </select> */}
+              //       <input
+              //         type="number"
+              //         id="cardYY"
+              //         onChange={(e) => setCardYY(e.target.value)}
+              //         value={cardYY}
+              //         required
+              //         className="rmArrow p-2 mt-3 mr-1 text-sm h-12 w-1/4 rounded-md  text-black"
+              //         placeholder="YY"
+              //       />
+              //       <input
+              //         type="number"
+              //         id="cvc"
+              //         onChange={(e) => setCvc(e.target.value)}
+              //         value={cvc}
+              //         required
+              //         className="rmArrow p-2 mt-3 ml-1 text-sm h-12 w-2/4 rounded-md  text-black"
+              //         placeholder="CVC"
+              //       />
+              //     </div>
 
-                    <button className="p-2 mt-7 w-full h-12 text-white bg-neutral-700 rounded-md">
-                      Submit
-                    </button>
-                  </form>
-                </div>
-              ) : !isLoading &&
+              //     <button className="p-2 mt-7 w-full h-12 text-white bg-neutral-700 rounded-md">
+              //       Submit
+              //     </button>
+              //   </form>
+              //   {/* <PaymentForm /> */}
+              // </div>
+              //   )
+              !isLoading &&
                 !existLoginSuccess &&
                 formMode &&
                 formMode === "existing" &&
-                !auth.id &&
-                !auth.meta_username &&
-                !auth.public_hashkey ? (
+                !auth.id ? (
                 <div className="flex flex-col justify-center items-center h-full w-full px-4">
                   <form
                     className="flex flex-col w-full"
-                    onSubmit={handleExistLogin}
+                    // onSubmit={handleExistLogin}
                   >
                     <input
                       ref={userUnameRef}
@@ -422,7 +842,11 @@ const Modal2 = ({ showModal, setShowModal }) => {
                       className="p-2 mt-3 text-sm w-full h-12 rounded-md  text-black"
                       placeholder="Password"
                     />
-                    <button className="p-2 mt-7 w-full h-12 text-white bg-neutral-700 rounded-md">
+                    <button
+                      className="p-2 mt-7 w-full h-12 text-white bg-neutral-700 rounded-md"
+                      onClick={handleExistLogin}
+                      disabled={!userUname || !pwd2}
+                    >
                       Login
                     </button>
                   </form>
@@ -431,18 +855,136 @@ const Modal2 = ({ showModal, setShowModal }) => {
                 existLoginSuccess &&
                 formMode &&
                 formMode === "existing2" &&
-                auth.id &&
-                auth.meta_username &&
-                auth.public_hashkey ? (
-                <div className="flex flex-col justify-center items-center h-full w-full px-4 text-white">
-                  <h1>You're already logged in</h1>
-                  <h1>as {" " + auth.meta_username}</h1>
-                  <button
-                    className="p-2 w-full h-12 mt-6 bg-neutral-700 rounded-md text-white"
+                !custPaymentDet ? (
+                <div className="flex flex-col justify-start items-center h-full w-full px-4 pt-12 text-white">
+                  {/* <h1>You're logged in as {" " + auth.meta_username}</h1> */}
+                  {/* <button
+                    className="p-2 h-8 mt-2 bg-neutral-700 rounded-md text-white"
                     onClick={() => handleExistingLogout()}
                   >
                     Logout?
-                  </button>
+                  </button> */}
+                  <form
+                    className="flex flex-col w-full mt-4"
+                    // onSubmit={handleCardSubmit}
+                  >
+                    <input
+                      ref={nameRef}
+                      type="text"
+                      id="username"
+                      autoComplete="off"
+                      onChange={(e) => setFullName(e.target.value)}
+                      value={fullName}
+                      required
+                      className="p-2 mt-3 text-sm w-full h-12 rounded-md text-black"
+                      placeholder="Full Name"
+                    />
+                    {/* <input
+                      type="password"
+                      id="password"
+                      onChange={(e) => setPwd(e.target.value)}
+                      value={pwd}
+                      required
+                      className="p-2 mt-3 text-sm w-full h-12 rounded-md  text-black"
+                      placeholder="Password"
+                    /> */}
+                    <input
+                      ref={emailRef}
+                      type="email"
+                      id="userEmail"
+                      autoComplete="off"
+                      onChange={(e) => setUserEmail(e.target.value)}
+                      value={userEmail}
+                      required
+                      className="p-2 mt-3 text-sm w-full h-12 rounded-md text-black"
+                      placeholder="Email Address"
+                    />
+                    <input
+                      type="number"
+                      id="cno"
+                      onChange={(e) => setCardNo(e.target.value)}
+                      value={cardNo}
+                      required
+                      className="rmArrow p-2 mt-3 text-sm w-full h-12 rounded-md  text-black"
+                      placeholder="Card Number"
+                    />
+                    <div className="flex flex-row w-full justify-start items-center">
+                      <input
+                        type="number"
+                        id="cardMM"
+                        onChange={(e) => setCardMM(e.target.value)}
+                        value={cardMM}
+                        required
+                        className="rmArrow p-2 mt-3 mr-1 text-sm h-12 w-1/4 rounded-md  text-black"
+                        placeholder="MM"
+                      />
+                      <input
+                        type="number"
+                        id="cardYY"
+                        onChange={(e) => setCardYY(e.target.value)}
+                        value={cardYY}
+                        required
+                        className="rmArrow p-2 mt-3 mr-1 text-sm h-12 w-1/4 rounded-md  text-black"
+                        placeholder="YY"
+                      />
+
+                      <input
+                        type="number"
+                        id="cvc"
+                        onChange={(e) => setCvc(e.target.value)}
+                        value={cvc}
+                        required
+                        className="rmArrow p-2 mt-3 ml-1 text-sm h-12 w-2/4 rounded-md  text-black"
+                        placeholder="CVC"
+                      />
+                    </div>
+
+                    <button className="p-2 mt-7 w-full h-12 text-white bg-neutral-700 rounded-md">
+                      Submit
+                    </button>
+                  </form>
+                </div>
+              ) : !isLoading &&
+                existLoginSuccess &&
+                formMode &&
+                formMode === "existing3" &&
+                custPaymentDet &&
+                custPaymentDet.customerID &&
+                custPaymentDet.paymentMethodID &&
+                singlePrd &&
+                sellerDet ? (
+                <div className="flex flex-col justify-between items-center h-full w-full px-4 pt-12 text-white">
+                  <div className="flex flex-col justify-start w-full">
+                    <div className="flex flex-row w-full justify-center items-center mb-8">
+                      <h1>Confirm Purchase?</h1>
+                    </div>
+                    <div className="flex flex-row justify-between items-center w-full">
+                      <div className="flex flex-col justify-start items-left h-full pl-2 pt-4">
+                        <p className="text-sm">{" " + singlePrd.productName}</p>
+                        <p className="text-sm mt-2">
+                          Price: {"$" + singlePrd.sellingPrice}
+                        </p>
+                      </div>
+                      <div className="flex flex-col">
+                        <img
+                          alt=""
+                          className="w-24 h-36 object-cover rounded-xl"
+                          src={singlePrd.product_image1}
+                        ></img>
+                      </div>
+                    </div>
+                    <button
+                      className="p-2 mt-7 w-full h-12 text-white bg-neutral-700 rounded-md"
+                      onClick={confirmPurchase}
+                    >
+                      Purchase
+                    </button>
+                  </div>
+                  <div className="flex flex-row justify-end items-center w-full pb-4">
+                    <h1>Powered by</h1>
+                    <img alt="" src={StripeMark} className="h-6 mx-2"></img>
+                    <img alt="" src={StripeIcon} className="h-6"></img>
+                  </div>
                 </div>
               ) : (
                 <></>

@@ -45,7 +45,7 @@ const Shops = () => {
       };
       fetchShops();
     }
-  }, [shopURL, setAllShops]);
+  }, [shopURL, setAllShops, allShops]);
 
   // useEffect(() => {
   //   if (allShops) {
@@ -140,8 +140,8 @@ const Shops = () => {
               <img alt="" src={BDGLOGO} className="w-24"></img>
               <p className="text-sm mt-2">Create Shop</p>
               <div className="flex flex-row justify-between items-center">
-                <img className="mx-2" src={PenIcon}></img>
-                <img className="mx-2" src={ScribbleIcon}></img>
+                <img alt="" className="mx-2" src={PenIcon}></img>
+                <img alt="" className="mx-2" src={ScribbleIcon}></img>
               </div>
             </div>
 
@@ -149,8 +149,8 @@ const Shops = () => {
               <img alt="" src={BDGLOGO} className="w-24"></img>
               <p className="text-sm mt-2">Create Shop</p>
               <div className="flex flex-row justify-between items-center">
-                <img className="mx-2" src={PenIcon}></img>
-                <img className="mx-2" src={ScribbleIcon}></img>
+                <img alt="" className="mx-2" src={PenIcon}></img>
+                <img alt="" className="mx-2" src={ScribbleIcon}></img>
               </div>
             </div>
 

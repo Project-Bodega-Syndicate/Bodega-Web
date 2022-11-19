@@ -10,8 +10,9 @@ import Dashboard from "./components/Dashboard";
 import Products from "./components/Products";
 import ProductDetails from "./components/ProductDetails";
 import Support from "./components/Support.js";
-// import Shops from "./components/Shops.js";
+import Shops from "./components/Shops.js";
 import UserProductDetail from "./components/UserProductDetail";
+import ShopDetails from "./components/ShopDetails";
 
 const App = () => {
   return (
@@ -24,7 +25,8 @@ const App = () => {
           <Route exact path="/products" element={<Products />} />
           <Route path="/product/:pid" element={<ProductDetails />} />
           <Route path="/:id/:pid" element={<UserProductDetail />} />
-          {/* <Route exact path="/shops" element={<Shops />} /> */}
+          <Route exact path="/shops" element={<Shops />} />
+          <Route path="/shop/:sid" element={<ShopDetails />} />
           <Route exact path="/login" element={<Login />} />
           {/* <Route exact path="/register" element={<Register />} /> */}
           <Route exact path="/support" element={<Support />} />

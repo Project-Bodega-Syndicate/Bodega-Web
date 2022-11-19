@@ -1,86 +1,55 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  useParams,
+  // useNavigate
+} from "react-router-dom";
 import useAppContext from "../hooks/useAppContext";
 import axios from "axios";
-import Modal from "./Modal.js";
-// import Modal2 from "./Modal2.js";
+// import Modal from "./Modal.js";
 
-const ProductDetails = () => {
-  const {
-    // id,
-    pid,
-  } = useParams();
-  const navigate = useNavigate();
-  const { singlePrd, setSinglePrd, setUserPrfData, hashList, hashids } =
-    useAppContext();
+const ShopDetails = () => {
+  const { sid } = useParams();
+  // const navigate = useNavigate();
+  const { singleShop, setSingleShop } = useAppContext();
 
   // const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [prdOwner, setPrdOwner] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  // const [noPrdErr, setNoPrdErr] = useState(false);
-  const [prdExists, setPrdExists] = useState(false);
-  const [decodedId, setDecodedId] = useState([]);
+  // const [shopOwner, setShopOwner] = useState([]);
+  const [noShopErr, setNoShopErr] = useState(false);
 
-  const prdURL = process.env.REACT_APP_PRODUCT_DETAIL_URL;
-  const baseURL4 = process.env.REACT_APP_BASEURL4;
-
-  // useEffect(() => {
-  //   console.log("Single Product Data: ", singlePrd);
-  // }, [singlePrd]);
-
-  // useEffect(() => {
-  //   if (singlePrd && singlePrd.id) {
-  //     console.log(singlePrd);
-  //   }
-  // }, [singlePrd]);
-
-  // useEffect(() => {
-  //   if (prdExists) {
-  //     console.log(prdExists);
-  //   }
-  // }, [prdExists]);
+  const shopDetailURL = process.env.REACT_APP_PRODUCT_DETAIL_URL;
 
   useEffect(() => {
-    if (hashList) {
-      for (var i = 0; i <= hashList.length; i++) {
-        if (pid === hashList[i]) {
-          setPrdExists(true);
-          setDecodedId(hashids.decode(pid));
-          break;
-        } else if (hashList[i] === hashList.slice(-1)[0]) {
-          setIsLoading(false);
-          setPrdExists(false);
-          break;
-        }
-      }
-      // hashList.forEach((x) => {
-      //   if (pid === x) {
-      //     setPrdExists(true);
-      //     setDecodedId(hashids.decode(pid));
-      //   }
-      // });
-    }
-  }, [hashList, hashids, pid]);
+    setNoShopErr(false);
+  }, [singleShop]);
+
+  // useEffect(() => {
+  //   console.log("Single Shop Data: ", singleShop);
+  // }, [singleShop]);
+
+  // useEffect(() => {
+  //   if (singleShop && singleShop.id) {
+  //     console.log(singleShop);
+  //   }
+  // }, [singleShop]);
 
   useEffect(() => {
-    if (singlePrd && singlePrd.product_image1) {
+    if (singleShop) {
       return;
-    } else if (!singlePrd || !singlePrd.product_image1) {
-      if (pid && prdExists && decodedId[0]) {
-        const fetchProductDetail = () => {
-          const fetchProductDetail = async () => {
+    } else if (!singleShop) {
+      if (sid) {
+        const fetchShopDetail = () => {
+          const fetchShopDetail = async () => {
             try {
               const headers = {
                 "Content-Type": "application/json",
               };
-              const response = await axios.get(`${prdURL}${decodedId[0]}/`, {
+              const response = await axios.get(`${shopDetailURL}${sid}/`, {
                 headers: headers,
               });
               if (response) {
                 // console.log("Product Detail API Response: ", response);
-                setSinglePrd(response.data);
+                setSingleShop(response.data);
                 setIsLoading(false);
                 // if (response.data.length === 0) {
                 //   setIsLoading(false);
@@ -93,63 +62,19 @@ const ProductDetails = () => {
             }
           };
           setIsLoading(true);
-          fetchProductDetail();
+          fetchShopDetail();
         };
-        fetchProductDetail();
+        fetchShopDetail();
       } else {
         setIsLoading(true);
       }
     }
-  }, [singlePrd, pid, decodedId, prdURL, setSinglePrd, prdExists]);
-
-  useEffect(() => {
-    if (singlePrd && singlePrd.id && singlePrd.metauserID) {
-      const fetchMetaUser = () => {
-        const fetchMetaUser = async () => {
-          try {
-            const headers = {
-              "Content-Type": "application/json",
-            };
-            const response = await axios.post(baseURL4, {
-              headers: headers,
-              ownerMetaUserID: singlePrd.metauserID,
-            });
-            if (response) {
-              // console.log("Product's Metauser: ", response.data);
-              if (response.data.length === 0) {
-                setPrdOwner([]);
-              } else {
-                setPrdOwner(response.data[0]);
-              }
-            }
-          } catch (err) {
-            console.log(err.response);
-          }
-        };
-        fetchMetaUser();
-      };
-      fetchMetaUser();
-    }
-  }, [singlePrd, baseURL4]);
-
-  const handleVisitCreator = () => {
-    if (prdOwner && prdOwner.id) {
-      setUserPrfData(prdOwner);
-      navigate(`/${prdOwner.metausername}`);
-    }
-  };
-
-  const openModal = () => {
-    setShowModal((prev) => !prev);
-  };
+  }, [singleShop, sid, shopDetailURL, setSingleShop]);
 
   return (
     <div className="flex flex-col items-center h-screen w-full">
-      <Modal showModal={showModal} setShowModal={setShowModal} />
-      {/* <Modal2 showModal={showModal} setShowModal={setShowModal} /> */}
-
       <div className="flex flex-col justify-start items-center h-screen w-full px-4 pt-12 text-white">
-        {isLoading ? (
+        {isLoading && !noShopErr ? (
           <div className="loadingCont flex justify-center items-center h-screen w-full">
             <svg
               width="214"
@@ -220,52 +145,28 @@ const ProductDetails = () => {
               />
             </svg>
           </div>
-        ) : !prdExists ? (
+        ) : noShopErr ? (
           <div className="flex justify-center items-center h-full w-full text-white">
-            <p className="mt-10">Invalid Product URL</p>
+            <p className="mt-10">Invalid Shop URL</p>
           </div>
         ) : (
           !isLoading &&
-          prdExists && (
+          !noShopErr && (
             <>
               <div className="w-full">
-                <img
-                  className="w-full"
-                  alt=""
-                  src={singlePrd.product_image1}
-                ></img>
+                <img className="w-full" alt="" src={singleShop.media1}></img>
               </div>
               <div className="flex flex-row justify-between w-full mt-10 px-2">
                 <div className="w-6/12">
-                  <p>{singlePrd.productName}</p>
+                  <p>{singleShop.caption1}</p>
                 </div>
                 <div className="flex flex-col items-center justify-center">
-                  <p>${singlePrd.sellingPrice}</p>
+                  <p>{singleShop.caption2}</p>
                 </div>
               </div>
-              <div className="mt-16 px-6">
-                <p>{singlePrd.producDescription}</p>
-              </div>
-              <button
-                className="p-2 mt-10 h-10 bg-sky-600 rounded-lg text-center"
-                onClick={() => handleVisitCreator()}
-              >
-                Visit Creator's Profile
-              </button>
-              <div className="flex flex-row justify-between w-4/5 mt-6 pb-12">
-                <button
-                  className="p-2 h-10 mr-1 bg-neutral-800 rounded-lg text-center border-solid border-2 border-white w-36"
-                  onClick={openModal}
-                >
-                  Yerrr
-                </button>
-                <button
-                  className="p-2 h-10 ml-1 bg-neutral-800 rounded-lg text-center border-solid border-2 border-white w-36"
-                  onClick={openModal}
-                >
-                  Buy
-                </button>
-              </div>
+              {/* <div className="mt-16 px-6">
+                <p>{singleShop.producDescription}</p>
+              </div> */}
             </>
           )
         )}
@@ -274,4 +175,4 @@ const ProductDetails = () => {
   );
 };
 
-export default ProductDetails;
+export default ShopDetails;
