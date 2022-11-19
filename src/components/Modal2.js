@@ -300,6 +300,7 @@ const Modal2 = ({ showModal, setShowModal }) => {
     if (existLoginSuccess) {
       fetchCustPaymentDet();
     }
+    // eslint-disable-next-line
   }, [existLoginSuccess]);
 
   const handleExistingBtnClick = () => {
@@ -376,61 +377,61 @@ const Modal2 = ({ showModal, setShowModal }) => {
   //   setFormMode("existing");
   // };
 
-  const handleCardSubmit = async (e) => {
-    e.preventDefault();
+  // const handleCardSubmit = async (e) => {
+  //   e.preventDefault();
 
-    try {
-      setIsLoading(true);
-      const headers = {
-        "Content-Type": "application/json",
-      };
-      const response = await axios.post(CREATE_CUST_URL, {
-        headers: headers,
-        email: userEmail,
-        number: cardNo,
-        exp_month: cardMM,
-        exp_year: cardYY,
-        cvc: cvc,
-        metauserID: auth.id,
-      });
-      console.log(response?.data);
-      setIsLoading(false);
-      if (
-        response.data &&
-        response.data.id &&
-        response.data.customerID &&
-        response.data.paymentMethodID &&
-        response.data.metauserID
-      ) {
-        setCustPaymentDet(response.data);
-        setFormMode("existing3");
-        setFullName("");
-        setNewUname("");
-        setPwd("");
-        setUserEmail("");
-        setCardNo(null);
-        setCardMM(null);
-        setCardYY(null);
-        setCvc(null);
-        setErrMsg("");
-      }
-    } catch (err) {
-      setIsLoading(false);
-      console.log(err);
-      if (!err?.response) {
-        setErrMsg("No Server Response");
-      } else if (err.response?.status === 400) {
-        setErrMsg("Missing Username or Password");
-      } else if (err.response?.status === 401) {
-        setErrMsg("Unauthorized");
-      } else {
-        setErrMsg("Login Failed");
-      }
-      if (errRef.current) {
-        errRef.current.focus();
-      }
-    }
-  };
+  //   try {
+  //     setIsLoading(true);
+  //     const headers = {
+  //       "Content-Type": "application/json",
+  //     };
+  //     const response = await axios.post(CREATE_CUST_URL, {
+  //       headers: headers,
+  //       email: userEmail,
+  //       number: cardNo,
+  //       exp_month: cardMM,
+  //       exp_year: cardYY,
+  //       cvc: cvc,
+  //       metauserID: auth.id,
+  //     });
+  //     console.log(response?.data);
+  //     setIsLoading(false);
+  //     if (
+  //       response.data &&
+  //       response.data.id &&
+  //       response.data.customerID &&
+  //       response.data.paymentMethodID &&
+  //       response.data.metauserID
+  //     ) {
+  //       setCustPaymentDet(response.data);
+  //       setFormMode("existing3");
+  //       setFullName("");
+  //       setNewUname("");
+  //       setPwd("");
+  //       setUserEmail("");
+  //       setCardNo(null);
+  //       setCardMM(null);
+  //       setCardYY(null);
+  //       setCvc(null);
+  //       setErrMsg("");
+  //     }
+  //   } catch (err) {
+  //     setIsLoading(false);
+  //     console.log(err);
+  //     if (!err?.response) {
+  //       setErrMsg("No Server Response");
+  //     } else if (err.response?.status === 400) {
+  //       setErrMsg("Missing Username or Password");
+  //     } else if (err.response?.status === 401) {
+  //       setErrMsg("Unauthorized");
+  //     } else {
+  //       setErrMsg("Login Failed");
+  //     }
+  //     if (errRef.current) {
+  //       errRef.current.focus();
+  //     }
+  //   }
+  // };
 
   const confirmPurchase = async (e) => {
     e.preventDefault();
