@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useAppContext from "../hooks/useAppContext";
 import axios from "axios";
-import Modal from "./Modal.js";
-// import Modal2 from "./Modal2.js";
+// import Modal from "./Modal.js";
+import Modal2 from "./Modal2.js";
 
 const ProductDetails = () => {
   const {
@@ -145,8 +145,8 @@ const ProductDetails = () => {
 
   return (
     <div className="flex flex-col items-center h-screen w-full">
-      <Modal showModal={showModal} setShowModal={setShowModal} />
-      {/* <Modal2 showModal={showModal} setShowModal={setShowModal} /> */}
+      {/* <Modal showModal={showModal} setShowModal={setShowModal} /> */}
+      <Modal2 showModal={showModal} setShowModal={setShowModal} />
 
       <div className="flex flex-col justify-start items-center h-screen w-full px-4 pt-12 text-white">
         {isLoading ? (
