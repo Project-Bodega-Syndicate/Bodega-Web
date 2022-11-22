@@ -229,11 +229,21 @@ const ProductDetails = () => {
           prdExists && (
             <>
               <div className="w-full">
-                <img
-                  className="w-full"
-                  alt=""
-                  src={singlePrd.product_image1}
-                ></img>
+                {singlePrd.product_image1 &&
+                singlePrd.product_image1.includes(".mp4") ? (
+                  <video controls loop autoplay className="w-full">
+                    <source
+                      type="video/mp4"
+                      src={singlePrd.product_image1}
+                    ></source>
+                  </video>
+                ) : (
+                  <img
+                    className="w-full"
+                    alt=""
+                    src={singlePrd.product_image1}
+                  ></img>
+                )}
               </div>
               <div className="flex flex-row justify-between w-full mt-10 px-2">
                 <div className="w-6/12">
